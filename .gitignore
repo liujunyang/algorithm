@@ -1,0 +1,13 @@
+/mpoemweb/
+/dist/
+/node_modules
+npm-debug.log
+.DS_Store
+.DS_Store?
+*.DS_Store
+.vscode
+*.log
+/src/assets/mock/*
+# Editor directories and files
+.idea
+

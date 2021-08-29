@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+  <div id="d1">hello world</div>
+</body>
+<script>
+  // xxx
+  window.onerror = function (e, source, l, c,d) {
+      console.log('捕获全局错误', e, source, l, c, d)
+    // e.preventDefault()
+    // 当我们打开return true 时候, 控制台不会出现红色了～
+    return true
+  }
+  xxx
+  let d1 = document.getElementById('d1')
+  d1.addEventListener('click', function (){
+    console.log(111)
+  }, {
+    capture: false,
+    once: true,
+  })
+  // xxx
+
+  // window.addEventListener('error', function () {
+  //   console.log('捕获全局错误')
+  // }, false)
+
+  // function test() {
+  //   try {
+  //     return console.log('try')
+  //   } catch (err) {
+  //     return console.log('err', err);
+  //   } finally {
+  //     throw new Error('抛出错误')
+  //     return console.log('finally')
+  //   }
+  //
+  //   console.log('a')
+  // }
+  // test()
+
+  function test() {
+    try {
+      console.log('try')
+      throw new Error('抛出错误')
+    } catch (err) {
+      console.log('err', err);
+      // throw new Error('抛出错误 in catch')
+    } finally {
+       console.log('finally')
+    }
+
+    console.log('a')
+  }
+  test()
+</script>
+</html>
