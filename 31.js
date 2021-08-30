@@ -1,3 +1,7 @@
+/**
+ * 20210829
+ * 在高途
+ */
 let funMap = {}
 
 
@@ -1477,4 +1481,285 @@ funMap.erchaSearch = () => {
     console.log(JSON.stringify(erchaSearch(root, 7)))
 }
 
-funMap.erchaSearch()
+// funMap.erchaSearch()
+
+
+// 二叉搜索树 插入新结点
+funMap.insertIntoBST = () => {
+    let root = {
+        val: 4,
+        left: {
+            val: 2,
+            left: {
+                val: 1
+            },
+            right: {
+                val: 3
+            }
+        },
+        right: {
+            val: 7,
+            left: {
+                val: 6
+            },
+            right: {
+                val: 9
+            }
+        }
+    }
+
+    function insertIntoBST(root, n) {
+        if (!root) {
+            return {val: n}
+        }
+
+        // 注意这里要用等号
+        if (root.val > n) {
+            root.left = insertIntoBST(root.left, n)
+        }
+
+        if (root.val < n) {
+            root.right = insertIntoBST(root.right, n)
+        }
+
+        return root
+    }
+
+    console.log(JSON.stringify(insertIntoBST(root, 3)))
+}
+
+// funMap.insertIntoBST()
+
+
+// 二叉搜索树 删除指定结点
+funMap.deleteFromBST = () => {
+    let root = {
+        val: 4,
+        left: {
+            val: 2,
+            left: {
+                val: 1
+            },
+            right: {
+                val: 3
+            }
+        },
+        right: {
+            val: 7,
+            left: {
+                val: 6
+            },
+            right: {
+                val: 9
+            }
+        }
+    }
+
+    function deleteFromBST(root, n) {
+        if (!root) {
+            return root
+        }
+
+        // 记得这里用等号
+        if (root.val > n) {
+            root.left = deleteFromBST(root.left, n)
+        }
+
+        if (root.val < n) {
+            root.right = deleteFromBST(root.right, n)
+        }
+
+        // 这2个函数返回的是目标节点的 val，同时会替换目标节点的父节点的下面的指向
+        function getMax(parent, root, level) {
+            if (root.right) {
+                return getMax(root, root.right, level + 1)
+            } else {
+                let val = root.val
+                /**
+                 * 这个地方确定归属 parent.left 还是 parent.right
+                 * 如果只找了一次就完事了，就是这层节点紧挨着删除的目标节点，
+                 * parent 就是目标节点，因为这种方式是找的左子树的最大值，那就用 left,
+                 * 如果是找了多次（level 大于 0），
+                 * 那得到 val 之后的操作就是 parent.right =（赋值） 最大节点的左节点
+                 *
+                 * 下面的 getMin 函数类似，只是相反
+                 */
+                //
+                let str = level === 0 ? 'left' : 'right'
+                parent[str] = root.left
+                return val
+            }
+        }
+
+        function getMin(parent, root, level) {
+            if (root.left) {
+                return getMin(root, root.left, level + 1)
+            } else {
+                let val = root.val
+                // 这个地方难以确定归属 parent.left 还是 parent.right
+                let str = level === 0 ? 'right' : 'left'
+                parent[str] = root.left
+                return val
+            }
+        }
+
+        /**
+         * 将当前节点的值改为左子树中值最大的或右节点中值最小的
+         *
+         */
+        if (root.val === n) {
+            // 用 if else if 来优先使用左子树中值最大的
+            if (root.left) {
+                root.val = getMax(root, root.left, 0)
+            } else if (root.right) {
+                root.val = getMin(root, root.right, 0)
+            } else {
+                // 叶子节点，直接删除，因为下面把 root 返回出去了，而且上面 "记得这里用等号"
+                root = null
+            }
+
+            // if (root.right) {
+            //     root.val = getMin(root, root.right, 0)
+            // } else if (root.left) {
+            //     root.val = getMax(root, root.left, 0)
+            // } else {
+            //     root = null
+            // }
+        }
+
+        return root
+    }
+
+    console.log(JSON.stringify(deleteFromBST(root, 4)))
+}
+
+// funMap.deleteFromBST()
+
+
+
+// 二叉搜索树 删除指定结点 这个是小册上面的写法，把最值节点的删除又用 deleteFromBST2 函数进行了，这点值得点赞
+// 上面的自己写的是自己挪动了子树。这个小册的写法也只会导致再执行一次 deleteFromBST2，
+// 因为替换目标节点的节点肯定是叶子节点了
+funMap.deleteFromBST2 = () => {
+    let root = {
+        val: 4,
+        left: {
+            val: 2,
+            left: {
+                val: 1
+            },
+            right: {
+                val: 3
+            }
+        },
+        right: {
+            val: 7,
+            left: {
+                val: 6
+            },
+            right: {
+                val: 9
+            }
+        }
+    }
+
+    function deleteFromBST2(root, n) {
+        if (!root) {
+            return root
+        }
+
+        if (root.val > n) {
+            root.left = deleteFromBST2(root.left, n)
+        } else if (root.val < n) {
+            root.right = deleteFromBST2(root.right, n)
+        } else {
+            // 这里不要忘写任意一个感叹号
+            if (!root.left && !root.right) {
+                root = null
+            }else if (root.left) {
+                let maxLeftVal = findMax(root.left)
+
+                root.val = maxLeftVal
+                deleteFromBST2(root.left, maxLeftVal)
+            } else {
+                let minLeftVal = findMin(root.right)
+
+                root.val = minLeftVal
+                deleteFromBST2(root.right, minLeftVal)
+            }
+        }
+
+        function findMax(root) {
+            while (root.right) {
+                root = root.right
+            }
+
+            return root.val
+        }
+
+        function findMin(root) {
+            while (root.left) {
+                root = root.left
+            }
+
+            return root.val
+        }
+
+        return root
+    }
+
+    console.log(JSON.stringify(deleteFromBST2(root, 4)))
+}
+
+// funMap.deleteFromBST2()
+
+
+
+funMap.isValidBST = () => {
+    let root = {
+        val: 4,
+        left: {
+            val: 2,
+            left: {
+                val: 1
+            },
+            right: {
+                val: 3
+            }
+        },
+        right: {
+            val: 7,
+            left: {
+                val: 6
+            },
+            right: {
+                val: 9
+            }
+        }
+    }
+
+    function isValidBST(root) {
+        if (!root) {
+            return true
+        }
+
+        let isLeftValid = true
+        let isRightValid = true
+
+        if (root.left && root.left.val > root.val) {
+            isLeftValid = false
+        }
+
+        if (root.right && root.right.val < root.val) {
+            isRightValid = false
+        }
+
+        return isLeftValid && isRightValid && isValidBST(root.left) && isValidBST(root.right)
+    }
+
+    console.log(JSON.stringify(isValidBST(root)))
+}
+
+funMap.isValidBST()
+
+
