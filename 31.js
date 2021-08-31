@@ -1714,7 +1714,7 @@ funMap.deleteFromBST2 = () => {
 // funMap.deleteFromBST2()
 
 
-
+// 二叉搜索树的验证  给定一个二叉树，判断其是否是一个有效的二叉搜索树
 funMap.isValidBST = () => {
     let root = {
         val: 4,
@@ -1760,6 +1760,58 @@ funMap.isValidBST = () => {
     console.log(JSON.stringify(isValidBST(root)))
 }
 
-funMap.isValidBST()
+// funMap.isValidBST()
+
+
+// 二叉搜索树的验证  给定一个二叉树，判断其是否是一个有效的二叉搜索树
+// 这是小册的写法，简化了代码结构，就是把当前节点的值传入下一个dfs，
+// 把对当前节点的判断转化为将当前节点作为子节点的值的边界进行判断。因为 Infinity 那个是肯定成立的。
+funMap.isValidBST2 = () => {
+    let root = {
+        val: 4,
+        left: {
+            val: 2,
+            left: {
+                val: 1
+            },
+            right: {
+                val: 3
+            }
+        },
+        right: {
+            val: 7,
+            left: {
+                val: 6
+            },
+            right: {
+                val: 9
+            }
+        }
+    }
+
+    function isValidBST2(root) {
+        function dfs(root, minVal, maxVal) {
+            if (!root) {
+                return true
+            }
+
+            // 第一次 dfs 这里肯定能通过，因为初次边界是 Infinity
+            if (root.val < minVal || root.val > maxVal) {
+                return false
+            }
+
+            // 把当前节点的值送入下一个dfs作为边界
+            return dfs(root.left, minVal, root.val) && dfs(root.right, root.val, maxVal)
+        }
+
+        return dfs(root, -Infinity, Infinity)
+    }
+
+    console.log(JSON.stringify(isValidBST2(root)))
+}
+
+funMap.isValidBST2()
+
+
 
 
