@@ -1813,5 +1813,67 @@ funMap.isValidBST2 = () => {
 funMap.isValidBST2()
 
 
+// 将排序数组转化为二叉搜索树  将一个按照升序排列的有序数组，转换为一棵高度平衡二叉搜索树。
+funMap.sortedArrayToBST = () => {
+    let arr = [-10,-3,0,5,9]
 
+    function sortedArrayToBST(arr) {
+        let root = null
+
+        if (!arr || !arr.length) {
+            return root
+        }
+
+        let len = arr.length
+        let mid = Math.floor(len/2)
+
+        root = {
+            val: arr[mid],
+            left: sortedArrayToBST(arr.slice(0, mid)),
+            right: sortedArrayToBST(arr.slice(mid+1))
+        }
+
+        return root
+    }
+
+    console.log(JSON.stringify(sortedArrayToBST(arr)))
+}
+
+// funMap.sortedArrayToBST()
+
+
+// 将排序数组转化为二叉搜索树  将一个按照升序排列的有序数组，转换为一棵高度平衡二叉搜索树。
+// 小册的写法，通过传索引，不用像上面自己写的那样 slice 出来新的数组，节约了空间
+funMap.sortedArrayToBST2 = () => {
+    let arr = [-10,-3,0,5,9]
+
+    function sortedArrayToBST2(arr) {
+        let root = null
+
+        if (!arr || !arr.length) {
+            return root
+        }
+
+        function buildBST(low, high) {
+            if (low > high) {
+                return null
+            }
+            // 这里用 ceil 也行，只是拎起来的点不同，也是合法的
+            let mid = Math.floor(low + (high - low)/2)
+            // console.log('mid', mid)
+
+            return {
+                val: arr[mid],
+                left: buildBST(low, mid - 1),
+                right: buildBST(mid + 1, high)
+            }
+        }
+
+        return buildBST(0, arr.length - 1)
+    }
+
+    console.log(JSON.stringify(sortedArrayToBST2(arr)))
+}
+
+funMap.sortedArrayToBST2()
 
