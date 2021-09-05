@@ -1810,7 +1810,7 @@ funMap.isValidBST2 = () => {
     console.log(JSON.stringify(isValidBST2(root)))
 }
 
-funMap.isValidBST2()
+// funMap.isValidBST2()
 
 
 // 将排序数组转化为二叉搜索树  将一个按照升序排列的有序数组，转换为一棵高度平衡二叉搜索树。
@@ -1875,5 +1875,119 @@ funMap.sortedArrayToBST2 = () => {
     console.log(JSON.stringify(sortedArrayToBST2(arr)))
 }
 
-funMap.sortedArrayToBST2()
+// funMap.sortedArrayToBST2()
 
+
+// 给定一个二叉树，判断它是否是高度平衡的二叉树【非平衡二叉树】。
+funMap.isBalanced = () => {
+    let root = {
+        val: 4,
+        left: {
+            val: 2,
+            left: {
+                val: 1
+            },
+            right: {
+                val: 3
+            }
+        },
+        right: {
+            val: 7,
+            left: {
+                val: 6
+            },
+            right: {
+                val: 9,
+                left: {
+                    val: 8,
+                    // left: {
+                    //     val: 7.5
+                    // }
+                }
+            }
+        }
+    }
+
+    function isBalanced(root) {
+        if (!root) {
+            return true
+        }
+
+        if (root.left && (root.left.left || root.left.right) && !root.right) {
+            return false
+        }
+
+        if (root.right && (root.right.right || root.right.right) && !root.left) {
+            return false
+        }
+
+        return isBalanced(root.left) && isBalanced(root.right)
+    }
+
+    console.log(isBalanced(root))
+}
+
+// funMap.isBalanced()
+
+
+// 给定一个二叉树，判断它是否是高度平衡的二叉树【非平衡二叉树】。
+// 小册上用了一个全局 flag，以及用数字来判断深度。flag 确定非平衡的话其他深度值就不再算了，递归返回。
+funMap.isBalanced2 = () => {
+    let root = {
+        val: 4,
+        left: {
+            val: 2,
+            left: {
+                val: 1
+            },
+            right: {
+                val: 3
+            }
+        },
+        right: {
+            val: 7,
+            left: {
+                val: 6
+            },
+            right: {
+                val: 9,
+                left: {
+                    val: 8,
+                    // left: {
+                    //     val: 7.5
+                    // }
+                }
+            }
+        }
+    }
+
+    function isBalanced2(root) {
+        let flag = true
+
+        function dfs(root) {
+            // 如果 flag 为 false，其实没必要进行后面子树的递归了，直接返回一个随便的数字即可
+            // 因为最后的返回值是 flag
+            if (!root || !flag) {
+                return 0
+            }
+
+            let left = dfs(root.left)
+            let right = dfs(root.right)
+
+            if (Math.abs(left - right) > 1) {
+                flag = false
+                return 0
+            }
+
+            return Math.max(left, right) + 1
+        }
+
+        // 记得这里启动第一个 dfs
+        dfs(root)
+        return flag
+    }
+
+    console.log(isBalanced2(root))
+}
+
+funMap.isBalanced2()
