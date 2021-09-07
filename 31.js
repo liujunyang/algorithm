@@ -1990,4 +1990,187 @@ funMap.isBalanced2 = () => {
     console.log(isBalanced2(root))
 }
 
-funMap.isBalanced2()
+// funMap.isBalanced2()
+
+
+// 平衡二叉树的构造
+// 给你一棵二叉搜索树，请你返回一棵平衡后的二叉搜索树，新生成的树应该与原来的树有着相同的节点值。
+// 小册中示例的输入输出虽然是数组，不过那是算法的伪表达，实际还是上面题目说的，输入输出都是树。
+funMap.balanceBST = () => {
+    let root = {
+        val: 4,
+        left: {
+            val: 2,
+            left: {
+                val: 1
+            },
+            right: {
+                val: 3
+            }
+        },
+        right: {
+            val: 7,
+            left: {
+                val: 6
+            },
+            right: {
+                val: 9,
+                left: {
+                    val: 8,
+                    // left: {
+                    //     val: 7.5
+                    // }
+                }
+            }
+        }
+    }
+
+    function balanceBST(root) {
+        if (!root) {
+            return root
+        }
+        let arr = []
+        function inOrder(root) {
+            if (!root) {
+                return
+            }
+
+            inOrder(root.left)
+            arr.push(root.val)
+            inOrder(root.right)
+        }
+
+        inOrder(root)
+
+        function buildBST(left, right) {
+            if (left > right) {
+                return null
+            }
+
+            let mid = Math.floor(left + (right - left)/2)
+            let root = {
+                val: arr[mid],
+                left: buildBST(left, mid - 1),
+                right: buildBST(mid + 1, right)
+            }
+
+            return root
+        }
+
+        return buildBST(0, arr.length - 1)
+    }
+
+    console.log(JSON.stringify(balanceBST(root)))
+}
+
+// funMap.balanceBST()
+
+
+// 堆结构在排序中的应用——优先队列
+// 在未排序的数组中找到第 k 个最大的元素。
+// 请注意，你需要找的是数组排序后的第 k 个最大的元素，而不是第 k 个不同的元素。
+// 输入: [3,2,1,5,6,4] 和 k = 2 输出: 5
+funMap.findKthLargest = () => {
+    let nums = [3,2,1,5,6,4]
+    let k = 2
+
+    function findKthLargest(nums, k) {
+        let arr = nums.sort((a, b) => b-a)
+
+        return arr[k - 1]
+    }
+
+    console.log(JSON.stringify(findKthLargest(nums, k)))
+}
+
+// funMap.findKthLargest()
+
+
+// 堆结构在排序中的应用——优先队列
+// 在未排序的数组中找到第 k 个最大的元素。
+// 请注意，你需要找的是数组排序后的第 k 个最大的元素，而不是第 k 个不同的元素。
+// 输入: [3,2,1,5,6,4] 和 k = 2 输出: 5
+// 小册写法
+// 其实完全没用用树的结构，而是用的数组表征程序遍历树的值
+funMap.findKthLargest2 = () => {
+    let nums = [3,2,1,5,6,4]
+    let k = 2
+
+    function findKthLargest2(nums, k) {
+        let heap = []
+        // n 其实是 heap 数组的位置索引
+        let n = 0
+
+        function createHeap() {
+            for (let i = 0; i < k; i++) {
+                insert(nums[i])
+            }
+        }
+
+        function updateHeap() {
+            for (let i = k; i < nums.length; i++) {
+                let item = nums[i]
+
+                if (item > heap[0]) {
+                    heap[0] = item
+                    downHeap(0, k)
+                }
+            }
+        }
+
+        function insert(x) {
+            heap[n] = x
+            upHeap(0, n)
+            n++
+        }
+
+        function downHeap(low, high) {
+            let i = low
+            let j = 2 * i + 1
+
+            while (j <= high) {
+                // 这个地方的判断不要写到下面的if中去，先判断左右哪个小
+                if (j+1 <= high && heap[j] > heap[j+1]) {
+                    j = j + 1
+                }
+
+                if (heap[i] > heap[j]) {
+                    [heap[i], heap[j]] = [heap[j], heap[i]]
+                    i = j
+                    j = 2 * i + 1
+                } else {
+                    break
+                }
+            }
+        }
+
+        /**
+         * 和 downHeap 不一样，upHeap 的时候，目标j的值不需要和兄弟节点的值去比较
+         * @param low
+         * @param high
+         */
+        function upHeap(low, high) {
+            let i = high
+            let j = Math.floor((i - 1)/2)
+
+            while (j >= low) {
+                if (heap[j] > heap[i]) {
+                    [heap[i], heap[j]] = [heap[j], heap[i]]
+
+                    i = j
+                    j = Math.floor((i - 1)/2)
+                } else {
+                    break
+                }
+            }
+        }
+
+        createHeap()
+        updateHeap()
+        return heap[0]
+    }
+
+    console.log(JSON.stringify(findKthLargest2(nums, k)))
+}
+
+funMap.findKthLargest2()
