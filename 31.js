@@ -2175,4 +2175,36 @@ funMap.findKthLargest2 = () => {
     console.log(JSON.stringify(findKthLargest2(nums, k)))
 }
 
-funMap.findKthLargest2()
+// funMap.findKthLargest2()
+
+
+
+// 冒泡排序
+funMap.bubbleSort = () => {
+    let nums = [3,2,1,5,6,4]
+
+    function bubbleSort(nums) {
+        if (!nums || !nums.length) {
+            return nums
+        }
+
+        let len = nums.length
+
+        // 记得这里是2层循环，时间长了就忘了，写成了一个 for
+        // 这个不是冒泡排序，是啥排序来着？
+        for (let i = 0; i < len - 1; i++) {
+            for (let j = i+1; j < len; j++) {
+                if (nums[i] > nums[j]) {
+                    [nums[i], nums[j]] = [nums[j], nums[i]]
+                }
+            }
+        }
+
+        return nums
+    }
+
+    console.log(JSON.stringify(bubbleSort(nums)))
+}
+
+funMap.bubbleSort()
+
