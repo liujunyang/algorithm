@@ -2193,12 +2193,22 @@ funMap.bubbleSort = () => {
         // 记得这里是2层循环，时间长了就忘了，写成了一个 for
         // 这个不是冒泡排序，是啥排序来着？
         for (let i = 0; i < len - 1; i++) {
-            for (let j = i+1; j < len; j++) {
-                if (nums[i] > nums[j]) {
-                    [nums[i], nums[j]] = [nums[j], nums[i]]
+            for (let j = 0; j < len - 1; j++) {
+                if (nums[j] > nums[j+1]) {
+                    [nums[j], nums[j+1]] = [nums[j+1], nums[j]]
                 }
             }
         }
+
+
+        // 这个不是冒泡排序，是啥排序来着？
+        // for (let i = 0; i < len - 1; i++) {
+        //     for (let j = i+1; j < len; j++) {
+        //         if (nums[i] > nums[j]) {
+        //             [nums[i], nums[j]] = [nums[j], nums[i]]
+        //         }
+        //     }
+        // }
 
         return nums
     }
