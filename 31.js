@@ -2191,7 +2191,6 @@ funMap.bubbleSort = () => {
         let len = nums.length
 
         // 记得这里是2层循环，时间长了就忘了，写成了一个 for
-        // 这个不是冒泡排序，是啥排序来着？
         for (let i = 0; i < len - 1; i++) {
             for (let j = 0; j < len - 1; j++) {
                 if (nums[j] > nums[j+1]) {
@@ -2216,5 +2215,68 @@ funMap.bubbleSort = () => {
     console.log(JSON.stringify(bubbleSort(nums)))
 }
 
-funMap.bubbleSort()
+// funMap.bubbleSort()
+
+
+// 冒泡排序
+funMap.bubbleSort2 = () => {
+    let nums = [3,2,1,5,6,4]
+
+    function bubbleSort2(nums) {
+        if (!nums || !nums.length) {
+            return nums
+        }
+
+        let len = nums.length
+
+        // 记得这里是2层循环，时间长了就忘了，写成了一个 for
+        for (let i = 0; i < len - 1; i++) {
+            for (let j = 0; j < len - 1 - i; j++) {
+                if (nums[j] > nums[j+1]) {
+                    [nums[j], nums[j+1]] = [nums[j+1], nums[j]]
+                }
+            }
+        }
+        return nums
+    }
+
+    console.log(JSON.stringify(bubbleSort2(nums)))
+}
+
+// funMap.bubbleSort2()
+
+
+// 冒泡排序
+funMap.bubbleSort3 = () => {
+    let nums = [3,2,1,5,6,4]
+
+    function bubbleSort3(nums) {
+        if (!nums || !nums.length) {
+            return nums
+        }
+
+        let len = nums.length
+        let flag = true
+
+        // 记得这里是2层循环，时间长了就忘了，写成了一个 for
+        for (let i = 0; i < len - 1; i++) {
+            for (let j = 0; j < len - 1 - i; j++) {
+                if (nums[j] > nums[j+1]) {
+                    flag = false; // 这个地方记得带分号，要么就记住在下面的方括号前面带上分号，养成习惯
+                    ;[nums[j], nums[j+1]] = [nums[j+1], nums[j]]
+                }
+            }
+
+            if (flag) {
+                return nums
+            }
+        }
+
+        return nums
+    }
+
+    console.log(JSON.stringify(bubbleSort3(nums)))
+}
+
+funMap.bubbleSort3()
 
