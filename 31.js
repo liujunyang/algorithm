@@ -2278,5 +2278,43 @@ funMap.bubbleSort3 = () => {
     console.log(JSON.stringify(bubbleSort3(nums)))
 }
 
-funMap.bubbleSort3()
+// funMap.bubbleSort3()
+
+
+// 选择排序
+funMap.selectSort = () => {
+    let nums = [3,2,1,5,6,4]
+
+    function selectSort(nums) {
+        if (!nums || !nums.length) {
+            return nums
+        }
+
+        let len = nums.length
+        let minIndex
+
+        // 最后一个元素的话就没必要再执行这个循环了
+        for (let i = 0; i < len - 1; i++) {
+            minIndex = i
+
+            // 每次都是把最小的移到了前面了，所以这里从新的 i继续往后选择排序
+            // 这里要判断当时最后一个位置 len - 1 上元素的值
+            for (let j = i; j < len; j++) {
+                if (nums[j] < nums[minIndex]) {
+                    minIndex = j
+                }
+            }
+
+            if (minIndex !== i) {
+                ;[nums[i], nums[minIndex]] = [nums[minIndex], nums[i]]
+            }
+        }
+
+        return nums
+    }
+
+    console.log(JSON.stringify(selectSort(nums)))
+}
+
+funMap.selectSort()
 
