@@ -2316,5 +2316,72 @@ funMap.selectSort = () => {
     console.log(JSON.stringify(selectSort(nums)))
 }
 
-funMap.selectSort()
+// funMap.selectSort()
+
+
+// 插入排序
+funMap.insertSort = () => {
+    let nums = [3,2,1,5,6,4]
+
+    function insertSort(nums) {
+        if (!nums || !nums.length) {
+            return nums
+        }
+
+        // 第一个肯定是有序的
+        for (let i = 1; i < nums.length; i++) {
+
+            // 假设前面都有序了，这个有逐个和前面互换位置的过程
+            for (let j = i - 1; j >= 0; j--) {
+                if (nums[j] > nums[j+1]) {
+                    ;[nums[j], nums[j+1]] = [nums[j+1], nums[j]]
+                } else {
+                    // 有序的情况下就不用继续往前比了
+                    break
+                }
+            }
+        }
+
+        return nums
+    }
+
+    console.log(JSON.stringify(insertSort(nums)))
+}
+
+// funMap.insertSort()
+
+
+// 插入排序 小册上的写法
+funMap.insertSort2 = () => {
+    let nums = [3,2,1,5,6,4]
+
+    function insertSort2(nums) {
+        if (!nums || !nums.length) {
+            return nums
+        }
+
+        // 第一个肯定是有序的
+        for (let i = 1; i < nums.length; i++) {
+
+            let temp = nums[i]
+            let j = i
+
+            // 这里跟上面自己的写法类似，都会及时终端：已经到了应该到的位置，或j到了0了
+            while (j > 0 && nums[j-1] > temp) {
+                nums[j] = nums[j-1]
+                j--
+            }
+
+            // j 目前的位置就是本轮 temp 应该在的位置
+            nums[j] = temp
+
+        }
+
+        return nums
+    }
+
+    console.log(JSON.stringify(insertSort2(nums)))
+}
+
+funMap.insertSort2()
 
