@@ -2383,5 +2383,126 @@ funMap.insertSort2 = () => {
     console.log(JSON.stringify(insertSort2(nums)))
 }
 
-funMap.insertSort2()
+// funMap.insertSort2()
+
+
+// 归并排序
+funMap.mergeSort = () => {
+    let nums = [3,2,1,5,6,4]
+
+    function mergeSort(nums) {
+        if (!nums || nums.length === 0 || nums.length === 1) {
+            return nums
+        }
+
+        let mid = Math.floor(nums.length/2)
+        let leftArr = mergeSort(nums.slice(0, mid))
+        let rightArr = mergeSort(nums.slice(mid))
+
+        return mergeArr(leftArr, rightArr)
+    }
+
+    function mergeArr(leftArr, rightArr) {
+        let len1 = leftArr.length
+        let len2 = rightArr.length
+        let i = len1 - 1
+        let j = len2 - 1
+        let k = i + j + 1
+
+        while (i >=0 && j>=0) {
+            if (leftArr[i] < rightArr[j]) {
+                leftArr[k] = rightArr[j]
+                k--
+                j--
+            } else {
+                leftArr[k] = leftArr[i]
+                k--
+                i--
+            }
+        }
+
+        while (j >= 0) {
+            leftArr[k] = rightArr[j]
+            k--
+            j--
+        }
+
+        return leftArr
+    }
+
+    console.log(JSON.stringify(mergeSort(nums)))
+}
+
+// funMap.mergeSort()
+
+
+
+// 快速排序
+funMap.quickSort = () => {
+    let nums = [3,2,1,1,1,5,6,4]
+
+    function quickSort(nums, left = 0, right = nums.length - 1) {
+        if (!nums || nums.length === 0 || nums.length === 1) {
+            return nums
+        }
+
+        let len = nums.length
+        let mid = Math.floor(len/2)
+        let numMid = nums[mid]
+
+        // 快速排序依次，得到分隔位置，下面分治进入后续的快排
+        let lineIndex = partition(nums, left, right)
+
+        if (left < lineIndex - 1) {
+            quickSort(nums, left, lineIndex - 1)
+        }
+
+        if (right > lineIndex) {
+            quickSort(nums, lineIndex, right)
+        }
+
+        return nums
+    }
+
+    // 把基准值左侧大于基准值的都弄右边，把基准值右侧小于基准值的都弄左边，这样当前的区域左边都小于等于右边了
+    // 再结合上面的分治思想，所有大小区间都满足这个特点的话，那整个数组就是有序的
+    function partition(nums, left, right) {
+        // 以中间为基准值
+        let pivotValue = nums[left + Math.floor((right - left)/2)]
+
+        let i = left
+        let j = right
+
+        // 这里像下面一样的道理，等于号的时候不用互换位置，所以不用写等号
+        while (i < j) {
+            while (nums[i] < pivotValue) {
+                i++
+            }
+
+            while (nums[j] > pivotValue) {
+                j--
+            }
+
+            // 等于的话，就是自己，没必要换，所以不用写等号
+            if (i < j) {
+                ;[nums[i], nums[j]] = [nums[j], nums[i]]
+            }
+
+            // 这个放上面这个 if 的外面，因为数组中有相同的值的时候，
+            // 在上面不写 i<=j 的条件的情况下某些时候触发不了自增，如 let nums = [3,2,1,1,1,5,6,4]
+            // 如果要写上面的 if 内，要在上面的判断条件上改为 i<=j
+            i++
+            j--
+        }
+
+        return i
+    }
+
+    console.log(JSON.stringify(quickSort(nums)))
+}
+
+funMap.quickSort()
+
+
+
 
