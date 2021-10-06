@@ -2501,7 +2501,161 @@ funMap.quickSort = () => {
     console.log(JSON.stringify(quickSort(nums)))
 }
 
-funMap.quickSort()
+// funMap.quickSort()
+
+
+
+// 动态规划 爬楼梯问题 递归版
+/**
+ * 站在第0阶阶梯开始爬
+ * 以终为始，从终点看 f(n) = f(n-1) + f(n-2)
+ * f(1) 为 1
+ * f(2) 为 2
+ *
+ * 基于树形思维思考是自顶向下，从未知最终拆回到已知的过程
+ * 动态规划是自底向上，从已知一步步向前推导找出未知的过程
+ */
+funMap.climbStairs = () => {
+    let n = 50
+
+    let _map = []
+
+    function climbStairs(n) {
+        if (n === 1) {
+            return 1
+        }
+
+        if (n === 2) {
+            return 2
+        }
+
+        if (_map[n]) {
+            return _map[n]
+        }
+
+        let res = climbStairs(n-1) + climbStairs(n-2)
+
+        _map[n] = res
+        return res
+
+    }
+
+    console.log(climbStairs(n))
+}
+
+// funMap.climbStairs()
+
+
+// 动态规划 爬楼梯问题 动态规划版
+/**
+ * 站在第0阶阶梯开始爬
+ * 以终为始，从终点看 f(n) = f(n-1) + f(n-2)
+ * f(1) 为 1
+ * f(2) 为 2
+ *
+ * 基于树形思维思考是自顶向下，从未知最终拆回到已知的过程
+ * 动态规划是自底向上，从已知一步步向前推导找出未知的过程
+ *
+ * 前面咱们在排序专题学过“分治”思想，提到了“子问题”这个概念。
+ * 分治问题的核心思想是：把一个问题分解为相互独立的子问题，逐个解决子问题后，
+ * 再组合子问题的答案，就得到了问题的最终解。
+ *
+ * 动态规划的思想和“分治”有点相似。不同之处在于，“分治”思想中，
+ * 各个子问题之间是独立的：比如说归并排序中，子数组之间的排序并不互相影响。
+ * 而动态规划划分出的子问题，往往是相互依赖、相互影响的。
+ *
+ * 什么样的题应该用动态规划来做？
+ * 最优子结构  它指的是问题的最优解包含着子问题的最优解——不管前面的决策如何，此后的状态必须是基于当前状态（由上次决策产生）的最优决策
+ * 重叠子问题  它指的是在递归的过程中，出现了反复计算的情况
+ */
+funMap.climbStairs2 = () => {
+    let n = 50
+
+    function climbStairs2(n) {
+        let f = []
+
+        f[1] = 1
+        f[2] = 2
+
+        for (let i = 3; i <= n; i++) {
+            f[i] = f[i-1] + f[i-2]
+        }
+
+        return f[n]
+    }
+
+    console.log(climbStairs2(n))
+}
+
+// funMap.climbStairs2()
+
+
+// 动态规划 “最值”型问题典范：如何优雅地找硬币
+/**
+ * 题目描述：给定不同面额的硬币 coins 和一个总金额 amount。
+ * 编写一个函数来计算可以凑成总金额所需的最少的硬币个数。
+ * 如果没有任何一种硬币组合能组成总金额，返回 -1。
+ *
+ * 示例1：
+ * 输入: coins = [1, 2, 5], amount = 11
+ * 输出: 3
+ * 解释: 11 = 5 + 5 + 1
+ *
+ * 假设组成 amount 用了 k 个硬币 ck 表示第 k 个硬币
+ * f(amount) = Math.min(f(amount-c1) + f(amount-c1) + f(amount-c1) + ...f(amount-ck)) + 1
+ * f(0) = 0
+ */
+funMap.coinChange = () => {
+    let coins = [1, 2, 5]
+    let amount = 11
+
+    function coinChange(coins, amount) {
+        let f = []
+
+        f[0] = 0
+
+        // 从 1 开始到 amount 逐个计算每个值的最优解
+        // 不要忘记写等号
+        for (let i = 1; i <= amount; i++) {
+            // 先初始化值为极大，如果这个数能找到硬币来凑他，一定比 Infinity 小，就会被替换
+            f[i] = Infinity
+
+            for (let j = 0; j < coins.length; j++) {
+                let item = coins[j]
+
+                // 能凑数
+                if (i - item >= 0) {
+                    // 不要像下面一样写 f[i-1]
+                    // f[i] = Math.min(f[i-1], (f[i-item]+1))
+
+                    // 没有加入 item 硬币时的最小硬币数【可能为 Infinity】
+                    let coinCountWithoutCoinJ =  f[i-item]
+                    // 加入 item 硬币时的最小硬币数【可能继续为 Infinity】
+                    let coinCountWithCoinJ =  coinCountWithoutCoinJ + 1
+
+                    // f[i] 本身在上面赋值为 Infinity，如果 coinCountWithCoinJ 为正常值，
+                    // 就能更新 f[i]，当然，前提是 i - item >= 0
+                    // 有可能算着算着 i - item >= 0 这个条件本身就满足不了了
+                    f[i] = Math.min(f[i], coinCountWithCoinJ)
+                }
+            }
+        }
+
+        if (f[amount] === Infinity) {
+            return -1
+        }
+
+        return f[amount]
+    }
+
+    console.log(coinChange(coins, amount))
+}
+
+funMap.coinChange()
+
+
+
+
 
 
 
