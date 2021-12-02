@@ -2652,7 +2652,7 @@ funMap.coinChange = () => {
     console.log(coinChange(coins, amount))
 }
 
-funMap.coinChange()
+// funMap.coinChange()
 
 /**
  * 题目描述：0-1背包问题
@@ -2666,6 +2666,7 @@ funMap.coinChange()
  * 如何才能使背包内的物品总价值最大？
  *
  * 用倒推法的时候，从包里面拿出来一个 x 后, C -w[x] 的体积下 valueTotal - value[x] 是总价值最大的吗，未必。
+ * 所以有在 C 体积下， x 可能不在的情况
  * 不过，从包里往外拿东西的时候，拿出来的是包里面价值最小的。不过，这个物品在外面是同样体积下价值最高的。
  * 主要是这个体积这个点想不清楚。
  * 再拿一个
@@ -2673,23 +2674,104 @@ funMap.coinChange()
  * 体积小、价值大的肯定一开始就放进去了。相同价值，体积小的先放。
  * 有可能体积差一点，就能放一个更大体积、价值更大的。
  *
+ * 重点思路：背包的体积在我们手里是可变的。往外拿，相当于换一个背包求解当时的解。
+ *
  * 往外拿x的时候，可以分为有x和没有x，这个思路要记住。
  *
  * 倒推法，能推导出 f(n) 和 f(n-1) 之间的关系，能得到状态转移方程，再找到边界 f(0) f(1) 等。所以都用倒推法。
  *
+ * 小册中：现在，假设背包已满，容量已经达到了 c。站在c这个容量终点往后退，考虑从中取出一样物品，那么可能被取出的物品就有 i 种可能性。
+ * 【这个 i 是怎么得来的，i 是啥，是最大化时，当时包里的物品的总数量】
+ * 我用 f(i, c) 来表示前 i 件物品恰好装入容量为 c 的背包中所能获得的最大价值【关键是这个前i件理解不了】
+ * 那么这么来看，i 就是题目里的 n。或者 i 是全装入包里也装不满的时候的一个值？
+ * 后来又说 "取出第 i 件物品的可能是 i 在包里或不在包里"，那么 i 就是 n 了。凭啥屏蔽一部分物品啊。
+ *
+ * 【注意小册说的是在容量终点c 取出一样物品，取一个】
+ * 1.在容量终点往后退
+ * 2.取的是1个
+ *
+ * 任意一个都可以是 i ，就是说，仅取出一个的时候，可以取的是任意一个，而不是数组中最后一个
+ * f(i-1, c-w[i]) 表示没有 i 这个东西，体积也小相应体积的情况下，的最大价值
+ * 现在就问，减少同样的体积的话，有可能拿出来的东西的价值更少吗，假设可以拿出来任意多个。
+ *
+ *
+ * 如果背包中没有i
+ * f(i, c) = f(i-1, c)
+ * 但如果背包中是有 i 的，那么取出这个动作就会带来价值量和体积量的减少：
+ * f(i, c) - value[i] = f(i-1, c-w[i])
+ *
+ * 背包中有 i 的情况下，拿走他，价值就是体积减少相应体积后的当时的最大值？
+ *
+ * c-w[i] 的体积下，确定就是少了一个 i 物品吗？
+ * 如果体积相同，价值不同呢。取出来肯定是先取出来价值小的。
+ * 那体积小点+价值小点的呢？
+ * 物品的顺序也未知
+ * 因为i还要表示一个个的物品，所以 i 的含义多于 n
+ *
+ *
+ * 考虑到这道题中存在两个自变量，我们需要开辟的是一个二维数组【存二维数组，这个思路要记住】
+ * 滚动数组思路
+ *
+ *
+ *
+ * 初始值给 -Infinity
+ *
+ * 入参是物品的个数n 和背包的容量上限c，以及物品的体积w和价值value数组
+ *
+ *
+ * 从增量的角度考虑：
+ * 假设背包中有 i，那么拿走i后，把体积减小 w[i]，能拿走的价值就是 value[i]，
+ * 因为不能是体积相同但是价值比vaule[i]小的物体，
+ * 也能啊，如果是往包里塞东西的时候，在包里已经有 i 的基础上，包的体积又增加了 w[i], 而w[j] 等于 w[i], j<i,
+ * 但是 value[j] < value[i], 假设这时候塞进去 j 最合适，那么就往包里塞 j 了，也是可能的，
+ * 那么假设这时候把包的总体积减小 w[j],拿出来的就是价值比 i 小的 j 了，
+ * 那么怎么说f(i)呢
+ *
+ * 倒推法比较适合人类的思维模式。
+ * ！！！注意：要预防"增量陷阱"：从开始向终点去思考，既不要从起点向终点思考，也不要从半截腰向终点思考。
+ * 不能用上面的角度从增量去考虑，需要从终点的容积 c 值全塞满去倒着考虑
+ * 注意 c 可能是绰绰有余包含所有的物品的一个值，也可能是刚好包含所有物品的一个值，也可能是包含不了所有物品的一个值
  */
-funMap.bagQuestion = () => {
-    let coins = [1, 2, 5]
-    let amount = 11
+funMap.knapsack = () => {
+    let n = 3
+    let vTotal = 7
+    let vList = [7, 15, 22]
+    let valueList = [1, 2, 3]
 
-    function bagQuestion(coins, amount) {
+    function knapsack(n, vTotal, w, valueList) {
+        // 这里数组的长度设置的 vTotal+1，因为下面初始化的 v 的值为 vTotal，
+        // dp[vTotal] 想要为 0 而不是 undefined 的话，需要 dp 的 length 为 vTotal + 1
+        const dp = (new Array(vTotal+1)).fill(0)
+        // res 用来记录所有组合方案中的最大值
+        let res = -Infinity
+
+        // i 不能从 1 开始，否则会把 w[0] 漏掉
+        for(let i=0; i<=n; i++) {
+            for(let v = vTotal; v >= w[i]; v--) {
+                // 写出状态转移方程
+                console.log('v, dp[v]====', v, dp[v])
+                console.log('Math.max(dp[v], dp[v-vList[i]] + valueList[i])', Math.max(dp[v], dp[v-vList[i]] + valueList[i]))
+                dp[v] = Math.max(dp[v], dp[v-vList[i]] + valueList[i])
+                console.log('valueList[i]', valueList[i])
+                console.log('v-vList[i], dp[v-vList[i]]', v-vList[i], dp[v-vList[i]])
+                console.log('dp[v-vList[i]] + valueList[i]', dp[v-vList[i]] + valueList[i])
+                console.log('i, vList[i]', i, vList[i])
+                console.log('v, v-vList[i], dp[v]', v, v-vList[i], dp[v])
+
+                // 即时更新最大值
+                if(dp[v] > res) {
+                    res = dp[v]
+                }
+            }
+        }
+        return res
 
     }
 
-    console.log(bagQuestion(coins, amount))
+    console.log(knapsack(n, vTotal, vList, valueList))
 }
 
-funMap.bagQuestion()
+funMap.knapsack()
 
 
 
