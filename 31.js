@@ -2731,12 +2731,63 @@ funMap.coinChange = () => {
  * ！！！注意：要预防"增量陷阱"：从开始向终点去思考，既不要从起点向终点思考，也不要从半截腰向终点思考。
  * 不能用上面的角度从增量去考虑，需要从终点的容积 c 值全塞满去倒着考虑
  * 注意 c 可能是绰绰有余包含所有的物品的一个值，也可能是刚好包含所有物品的一个值，也可能是包含不了所有物品的一个值
+ *
+ *
+ * 从后往前倒推，不是说包里比如有两个体积相同但是价值不同的物体往外取的时候，往外拿哪个能够使得
+ * 包里面剩下的总价格最大，这样有可能是更小点的i的价值更小，导致拿的可能不是当前的，而是随便的一个 i。
+ *
+ * 而是说，这个 i 就是物品数组的 i，就是从后往前遍历这个数组，比如数组就是少了这个元素，
+ * 就是没有这个物体了，那肯定 假如 i在包里的话，拿走后 f(i-1, c-w[i]) 是最大的值。
+ *
+ * 这么说 i 也可以从0 开始计数，甚至，i的遍历顺序可以随机跳着来，for循环只是方便遍历而已
+ * 解法里面就是让i从0开始计数的，而是包的体积逐步减小去对比。
+ * 就是对每个物体都试试数组里面有没有他
+ *
+ * 对于一堆给定的物体来说，不同体积的背包的解，已经定死了结果。
+ * 所以更合适的理解方式下，可能入参应该更语义化成 items 这种格式，连 n 也不要
+ *
+ * 遍历每一个物体，倒推对于这个物体来说，体积的变化对应的值
+ *
+ * 小册里说前 i 个有点误导性，物体不讲顺序，只是要都试一下有没有。而是 v 从后往前
+ *
+ * 感觉v也可以从item.volume到vTotal, 不从0，是因为这时候跟 item 肯定没关系，都容不下item
+ *
+ *
+ * 我用 f(i, c) 来表示前 i 件物品恰好装入容量为 c 的背包中所能获得的最大价值。现在假设我试图取出的物品是 i，那么只有两种可能：
+
+ 第 i 件物品在背包里
+ 第 i 件物品不在背包里
+
+ * 这句话应该改成
+ * 我用 f(i, c) 来表示这 n 件物品恰好装入容量为 c 的背包中所能获得的最大价值。现在假设我试图取出的物品是 i，那么只有两种可能：
+
+ 第 i 件物品在背包里
+ 第 i 件物品不在背包里
+ *
+ * 不能写成 前 i 件，有误导性
+ *
+ * 小册是一下子从 v递增跳跃到了v 递减。这个是因为滚动数组，不用滚动数组用递增试试
  */
 funMap.knapsack = () => {
     let n = 3
-    let vTotal = 7
-    let vList = [7, 15, 22]
+    let vTotal = 23
+    let vList = [7, 15, 7]
     let valueList = [1, 2, 3]
+
+    let items = [
+        {
+            volume: 7,
+            value: 1,
+        },
+        {
+            volume: 15,
+            value: 2,
+        },
+        {
+            volume: 7,
+            value: 3,
+        },
+    ]
 
     function knapsack(n, vTotal, w, valueList) {
         // 这里数组的长度设置的 vTotal+1，因为下面初始化的 v 的值为 vTotal，
@@ -2771,10 +2822,59 @@ funMap.knapsack = () => {
     console.log(knapsack(n, vTotal, vList, valueList))
 }
 
-funMap.knapsack()
+// funMap.knapsack()
 
 
 
+funMap.knapsack2 = () => {
+    let vTotal = 17
+
+    let items = [
+        {
+            volume: 7,
+            value: 1,
+        },
+        {
+            volume: 15,
+            value: 2,
+        },
+        {
+            volume: 7,
+            value: 3,
+        },
+    ]
+
+    function knapsack2(vTotal, items) {
+        let len = items.length
+        // 这里数组的长度设置的 vTotal+1，因为下面初始化的 v 的值为 vTotal，
+        // dp[vTotal] 想要为 0 而不是 undefined 的话，需要 dp 的 length 为 vTotal + 1
+        const dp = (new Array(vTotal+1)).fill(0)
+        // res 用来记录所有组合方案中的最大值
+        let res = -Infinity
+
+        // i 不能从 1 开始，否则会把 w[0] 漏掉
+        for(let i=0; i<len; i++) {
+            let item = items[i]
+            for(let v = vTotal; v >= item.volume; v--) {
+                // 写出状态转移方程
+                dp[v] = Math.max(dp[v], dp[v-item.volume] + item.value)
+                console.log('v-item.volume-----', v-item.volume)
+                console.log('i, v, dp[v]', i, v, dp[v])
+
+                // 即时更新最大值
+                if(dp[v] > res) {
+                    res = dp[v]
+                }
+            }
+        }
+        return res
+
+    }
+
+    console.log(knapsack2(vTotal, items))
+}
+
+funMap.knapsack2()
 
 
 
