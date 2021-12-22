@@ -2802,17 +2802,12 @@ funMap.knapsack = () => {
         let res = -Infinity
 
         // i 不能从 1 开始，否则会把 w[0] 漏掉
-        for(let i=0; i<=n; i++) {
+        for(let i=0; i<n; i++) {
             for(let v = vTotal; v >= w[i]; v--) {
                 // 写出状态转移方程
-                console.log('v, dp[v]====', v, dp[v])
-                console.log('Math.max(dp[v], dp[v-vList[i]] + valueList[i])', Math.max(dp[v], dp[v-vList[i]] + valueList[i]))
+                console.log('开始 v, v-vList[i], dp[v]====', v, v-vList[i], dp[v])
                 dp[v] = Math.max(dp[v], dp[v-vList[i]] + valueList[i])
-                console.log('valueList[i]', valueList[i])
-                console.log('v-vList[i], dp[v-vList[i]]', v-vList[i], dp[v-vList[i]])
-                console.log('dp[v-vList[i]] + valueList[i]', dp[v-vList[i]] + valueList[i])
-                console.log('i, vList[i]', i, vList[i])
-                console.log('v, v-vList[i], dp[v]', v, v-vList[i], dp[v])
+                console.log('结束 v, v-vList[i], dp[v]', v, v-vList[i], dp[v])
 
                 // 即时更新最大值
                 if(dp[v] > res) {
@@ -2827,7 +2822,7 @@ funMap.knapsack = () => {
     console.log(knapsack(n, vTotal, vList, valueList))
 }
 
-// funMap.knapsack()
+funMap.knapsack()
 
 
 
@@ -2879,7 +2874,7 @@ funMap.knapsack2 = () => {
     console.log(knapsack2(vTotal, items))
 }
 
-funMap.knapsack2()
+// funMap.knapsack2()
 
 
 
