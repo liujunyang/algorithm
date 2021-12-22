@@ -153,6 +153,7 @@ function testReject1() {
       Promise.reject(666)
       console.log(111222444)
 
+      // 本例这里这个 pro 一直没有被 resolve 或 reject，所以没有后续关于他的打印值
       return pro
 
     } catch(err){
