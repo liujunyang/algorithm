@@ -2829,10 +2829,12 @@ funMap.coinChange = () => {
  * 注意 c 可能是绰绰有余包含所有的物品的一个值，也可能是刚好包含所有物品的一个值，也可能是包含不了所有物品的一个值
  *
  *
- * 上的注释的思路是错的！！
+ * 上的注释的思路是错的！！看上面一大堆感叹号包围的地方。
+ * 去看 knapsack2 的注释。
  *
  * 入参是物品的个数n 和背包的容量上限c，以及物品的体积w和价值value数组
- * 初始值给 -Infinity
+ * 最优解 初始值给 0
+ * res 初始值给 -Infinity
  */
 funMap.knapsack1 = () => {
     let n = 3
@@ -3010,7 +3012,7 @@ funMap.knapsack1 = () => {
  *
  *
  * 变量 v 从 item.volume 到 vTotal, 而不是从 0 开始，
- * 是因为背包体积比 item.volume 都小的话，本就容不下item，没有意义（就用初始值 -Infinity）。
+ * 是因为背包体积比 item.volume 都小的话，本就容不下item，没有意义（就用初始值 0）。
  * 后面之所以是从 vTotal 到 item.volume 递减的方式，是因为可以用滚动数组的方式，就是要倒着来，因为是覆盖性的。
  *
  *
@@ -3027,7 +3029,9 @@ funMap.knapsack1 = () => {
  *
  *
  * 入参是物品的个数n 和背包的容量上限c，以及物品的体积w和价值value数组
- * 初始值给 -Infinity
+ * 代码的写法和 knapsack1 一样，就是注释不一样。
+ * 最优解 初始值给 0
+ * res 初始值给 -Infinity
  */
 funMap.knapsack2 = () => {
     let n = 3
@@ -3043,9 +3047,9 @@ funMap.knapsack2 = () => {
         let res = -Infinity
 
         // i 不能从 1 开始，否则会把 w[0] 漏掉
-        // for(let i=0; i<n; i++) {
+        for(let i=0; i<n; i++) {
         // 测试更换遍历物品的顺序，过程中的打印值会不一样，不过最终解一样
-        for(let i=n-1; i>=0; i--) {
+        // for(let i=n-1; i>=0; i--) {
             console.log(`======vList[${i}]: ${vList[i]}`)
             for(let v = vTotal; v >= vList[i]; v--) {
                 // 写出状态转移方程
@@ -3070,9 +3074,6 @@ funMap.knapsack2 = () => {
 
 /**
  * 背包问题考虑优化下函数入参后的写法
- * 下一步
- * 优化这个函数里的注释
- * 留下怎么选择物品的足迹
  */
 funMap.knapsack3 = () => {
     let vTotal = 23
@@ -3101,13 +3102,16 @@ funMap.knapsack3 = () => {
         let res = -Infinity
 
         // i 不能从 1 开始，否则会把 w[0] 漏掉
-        for(let i=0; i<len; i++) {
+        for(let i = 0; i < len; i++) {
+        // 测试更换遍历物品的顺序，过程中的打印值会不一样，不过最终解一样
+        // for(let i = len-1; i >=0 ; i--) {
             let item = items[i]
+            console.log(`====== ${i} item.volume: ${item.volume}`)
             for(let v = vTotal; v >= item.volume; v--) {
                 // 写出状态转移方程
+                console.log(`开始 v: ${v}, v-item.volume: ${v-item.volume}, dp[v]: ${dp[v]}  dp[v-item.volume] + item.value:${dp[v-item.volume] + item.value}`)
                 dp[v] = Math.max(dp[v], dp[v-item.volume] + item.value)
-                console.log('v-item.volume-----', v-item.volume)
-                console.log('i, v, dp[v]', i, v, dp[v])
+                console.log(`结束 dp[${v}]`, dp[v])
 
                 // 即时更新最大值
                 if(dp[v] > res) {
@@ -3122,5 +3126,82 @@ funMap.knapsack3 = () => {
     console.log(knapsack3(vTotal, items))
 }
 
-funMap.knapsack3()
+// funMap.knapsack3()
+
+
+
+/**
+ * 背包问题留下怎么选择物品的足迹
+ */
+funMap.knapsack4 = () => {
+    let vTotal = 23
+
+    let items = [
+        {
+            volume: 7,
+            value: 4,
+        },
+        {
+            volume: 15,
+            value: 2,
+        },
+        {
+            volume: 7,
+            value: 3,
+        },
+    ]
+
+    function knapsack4(vTotal, items) {
+        let len = items.length
+        // 这里数组的长度设置的 vTotal+1，因为下面初始化的 v 的值为 vTotal，
+        // dp[vTotal] 想要为 0 而不是 undefined 的话，需要 dp 的 length 为 vTotal + 1
+        const dp = []
+
+        for (let i = 0; i < vTotal+1; i++) {
+            dp[i] = {
+                value: 0,
+                bagItems: [],
+            }
+        }
+
+        // res 用来记录所有组合方案中的最大值
+        let res = {
+            value: -Infinity,
+        }
+
+        // i 不能从 1 开始，否则会把 w[0] 漏掉
+        for(let i = 0; i < len; i++) {
+            // 测试更换遍历物品的顺序，过程中的打印值会不一样，不过最终解一样
+            // for(let i = len-1; i >=0 ; i--) {
+            let item = items[i]
+            console.log(`====== ${i} item.volume: ${item.volume}`)
+            for(let v = vTotal; v >= item.volume; v--) {
+                // 写出状态转移方程
+                console.log(`开始 v: ${v}, v-item.volume: ${v-item.volume}, dp[v].value: ${dp[v].value}  dp[v-item.volume].value + item.value:${dp[v-item.volume].value + item.value}`)
+                // 留下足迹的话，这里就不能用 Math.max 了，而是要对比下
+                // dp[v] = Math.max(dp[v], dp[v-item.volume] + item.value)
+
+                let valAfterUseItem = dp[v-item.volume].value + item.value
+                if (dp[v].value < valAfterUseItem) {
+                    dp[v].value = valAfterUseItem
+                    // i 物品对这个体积 v 可用的话，就覆盖原来的取物痕迹
+                    dp[v].bagItems = dp[v-item.volume].bagItems.concat([i])
+                }
+
+                console.log(`结束 dp[${v}]`, dp[v])
+
+                // 即时更新最大值
+                if(dp[v].value > res.value) {
+                    res = dp[v]
+                }
+            }
+        }
+        return res
+
+    }
+
+    console.log(knapsack4(vTotal, items))
+}
+
+funMap.knapsack4()
 
