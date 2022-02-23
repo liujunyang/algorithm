@@ -1,9 +1,8 @@
-function myForEach(arr: any[], callback: (arg: any, index?: number) => void) {
-    for (let i = 0; i < arr.length; i++) {
-        callback(arr[i], i);
-    }
-}
+function fun(): void {
+    console.log("this is TypeScript");
+};
+fun();
 
-myForEach([1, 2, 3], (a, i) => {
-    console.log(i.toFixed());
-});
+let fna = <Type>(arr: Type[]): Type => {
+    return arr[0];
+}

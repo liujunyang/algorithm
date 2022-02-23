@@ -1,8 +1,9 @@
-function myForEach(arr, callback) {
-    for (var i = 0; i < arr.length; i++) {
-        callback(arr[i], i);
-    }
+function fun() {
+    console.log("this is TypeScript");
 }
-myForEach([1, 2, 3], function (a, i) {
-    console.log(i.toFixed());
-});
+;
+fun();
+var fna = function (arr) {
+    return arr[0];
+};
+//# sourceMappingURL=tstest.js.map
