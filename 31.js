@@ -3135,4 +3135,48 @@ funMap.knapsack4 = () => {
   console.log(knapsack4(vTotal, items))
 }
 
-funMap.knapsack4()
+// funMap.knapsack4()
+
+/**
+ * 最长上升子序列
+ * 题目描述：给定一个无序的整数数组，找到其中最长上升子序列的长度。
+ * 示例:
+ * 输入: [10,9,2,5,3,7,101,18]
+ * 输出: 4
+ * 解释: 最长的上升子序列是 [2,3,7,101]，它的长度是 4。
+ *
+ *
+ * =========================
+ * 关键思想：那就是关注到序列中元素的索引，尝试寻找不同索引对应的元素之间的关系、并以索引为线索去构造一维或二维的状态数组。
+ *
+ *
+ */
+funMap.lengthOfLIS = () => {
+  let arr = [10, 9, 2, 5, 3, 7, 101, 18]
+  function lengthOfLIS(arr) {
+    if (!Array.isArray(arr) || arr.length === 0) {
+      return 0
+    }
+
+    let res = 1
+    let indexArr = new Array(arr.length).fill(1)
+
+    // 0 不用算，就是1个
+    for (let i = 1; i < arr.length; i++) {
+      let item = arr[i]
+      for (let j = 0; j < i; j++) {
+        if (item > arr[j]) {
+          indexArr[i] = Math.max(indexArr[i], indexArr[j] + 1)
+        }
+      }
+
+      res = Math.max(res, indexArr[i])
+    }
+
+    return res
+  }
+
+  console.log(lengthOfLIS(arr))
+}
+
+funMap.lengthOfLIS()
