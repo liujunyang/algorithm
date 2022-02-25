@@ -3148,7 +3148,7 @@ funMap.knapsack4 = () => {
  *
  * =========================
  * 关键思想：那就是关注到序列中元素的索引，尝试寻找不同索引对应的元素之间的关系、并以索引为线索去构造一维或二维的状态数组。
- *
+ * 只要你把握住了“重叠子问题”和“最优子结构”两个关键特征，把握住了动态规划的核心解题逻辑
  *
  */
 funMap.lengthOfLIS = () => {
@@ -3179,4 +3179,80 @@ funMap.lengthOfLIS = () => {
   console.log(lengthOfLIS(arr))
 }
 
-funMap.lengthOfLIS()
+// funMap.lengthOfLIS()
+
+// 微软系列开始
+/**
+ * 最长回文子串问题
+ * 题目描述：给定一个字符串 s，找到 s 中最长的回文子串。你可以假设 s 的最大长度为 1000。
+ * 示例1:
+ * 输入: "babad"
+ * 输出: "bab"
+ * 注意: "aba" 也是一个有效答案。
+ *
+ * 示例 2：
+ * 输入: "cbbd"
+ * 输出: "bb"
+ *
+ * =========================
+ * 命题关键字：字符串、动态规划
+ *
+ *
+ * 知道了 dp[i][j] 和 dp[i + 1][j - 1] 之间的状态转移关系以后怎么从已知到未知进行动态规划？
+ * 把 i 从后往前遍历，把 j 从前往后遍历
+ *
+ */
+funMap.longestPalindrome = () => {
+  let str = 'abbac'
+
+  function longestPalindrome(str) {
+    let dp = []
+
+    // 初始化状态为二维数组
+    for (let i = 0; i < str.length; i++) {
+      // 初始化 i j 相等时为 1，自己一个字符肯定回文啦
+      dp[i] = []
+      dp[i][i] = 1
+    }
+
+    // 如果只要长度的话，也可以直接用 res=1,然后不断更新最长长度
+    // let res = 1
+    let res = {
+      i: 0,
+      j: 0,
+    }
+
+    // for (let i = 0; i < str.length; i++) {
+    // i 从后往前遍历，才可以拿到 dp[i + 1][j - 1] 的值啊
+    for (let i = str.length - 1; i >= 0; i--) {
+      // j 从 i 右侧开始，因为左侧不可能，而且等于 i 时也已经在上面初始化过了
+      for (let j = i + 1; j < str.length; j++) {
+        console.log(`i ${i} j ${j}`)
+        if (str[i] === str[j]) {
+          if (i + 1 <= j - 1) {
+            dp[i][j] = dp[i + 1][j - 1]
+          } else {
+            dp[i][j] = 1
+          }
+        } else {
+          dp[i][j] = 0
+        }
+
+        if (dp[i][j] === 1) {
+          // 注意不要写代码时候的小失误，比如写成下面这样
+          // res = Math.max(1, j - 1 + 1)
+          // res = Math.max(res, j - i + 1)
+          if (res.j - res.i < j - i) {
+            res = { i, j }
+          }
+        }
+      }
+    }
+
+    return res
+  }
+
+  console.log(longestPalindrome(str))
+}
+
+funMap.longestPalindrome()
