@@ -3225,7 +3225,7 @@ funMap.longestPalindrome = () => {
     // for (let i = 0; i < str.length; i++) {
     // i 从后往前遍历，才可以拿到 dp[i + 1][j - 1] 的值啊
     for (let i = str.length - 1; i >= 0; i--) {
-      // j 从 i 右侧开始，因为左侧不可能，而且等于 i 时也已经在上面初始化过了
+      // j 从 i 右侧开始，因为左侧不可能，而且等于 i 本身时也已经在上面初始化过了
       for (let j = i + 1; j < str.length; j++) {
         console.log(`i ${i} j ${j}`)
         if (str[i] === str[j]) {
