@@ -3313,4 +3313,97 @@ funMap.longestPalindrome2 = () => {
   console.log(longestPalindrome2(str))
 }
 
-funMap.longestPalindrome2()
+// funMap.longestPalindrome2()
+
+/**
+ * 从前序（先序）与中序遍历序列构造二叉树
+ * 题目描述：根据一棵树的前序遍历与中序遍历构造二叉树。
+ * 注意: 你可以假设树中没有重复的元素。
+ *
+ * 例如，给出
+ * 前序遍历 preorder = [3,9,20,15,7]
+ * 中序遍历 inorder = [9,3,15,20,7]
+ *
+ * 返回如下的二叉树：
+ *
+ *     3
+ *    / \
+ *   9  20
+ *     /  \
+ *    15  7
+ *
+ * 命题关键字：二叉树、前序、中序、遍历序列特征、递归
+ *
+ * ----------------------
+ * 先序遍历的第一个元素一定是根节点
+ * 中序遍历根节点的左侧肯定是左子树，右侧肯定是右子树
+ * 中序遍历根节点所在的索引 k 等于先序遍历左子树所在的最后一个元素的索引
+ *
+ * 自己的方案：通过 slice 数组
+ *
+ */
+funMap.buildTree = () => {
+  const preorder = [3, 9, 20, 15, 7]
+  const inorder = [9, 3, 15, 20, 7]
+
+  function buildTree(preorder, inorder) {
+    if (!preorder.length || !inorder.length) {
+      return null
+    }
+
+    const root = {}
+
+    root.val = preorder[0]
+    let k = inorder.indexOf(preorder[0])
+
+    // 这里容易不判断 k，结合下面可能的错误方式可能会导致无限递归，slice
+    if (k > -1) {
+      // 下面可能限制错 slice 的范围
+      root.left = buildTree(preorder.slice(1, k + 1), inorder.slice(0, k))
+      root.right = buildTree(preorder.slice(k + 1), inorder.slice(k + 1))
+    }
+
+    return root
+  }
+
+  console.log(buildTree(preorder, inorder))
+}
+
+// funMap.buildTree()
+
+/**
+ * 从前序（先序）与中序遍历序列构造二叉树
+ *
+ * 小册的方案：通过数组下标定位，优势：不占用额外空间
+ *
+ */
+funMap.buildTree2 = () => {
+  const preorder = [3, 9, 20, 15, 7]
+  const inorder = [9, 3, 15, 20, 7]
+
+  function buildTree2(preorder, inorder) {
+    function bdt(preL, preR, inL, inR) {
+      if (preL > preR || inL > inR) {
+        return null
+      }
+
+      let rootVal = preorder[preL]
+      let root = {
+        val: rootVal,
+      }
+      let k = inorder.indexOf(rootVal)
+
+      root.left = bdt(preL + 1, k, inL, k - 1)
+      root.right = bdt(k + 1, preR, k + 1, inR)
+
+      return root
+    }
+
+    let len = preorder.length
+    return bdt(0, len - 1, 0, len - 1)
+  }
+
+  console.log(buildTree2(preorder, inorder))
+}
+
+funMap.buildTree2()
