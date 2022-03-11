@@ -3199,11 +3199,11 @@ funMap.lengthOfLIS = () => {
  *
  *
  * 知道了 dp[i][j] 和 dp[i + 1][j - 1] 之间的状态转移关系以后怎么从已知到未知进行动态规划？
- * 把 i 从后往前遍历，把 j 从前往后遍历
+ * 自己的方案：把 i 从后往前遍历，把 j 从前往后遍历
  *
  */
 funMap.longestPalindrome = () => {
-  let str = 'abbac'
+  let str = 'aaabbac'
 
   function longestPalindrome(str) {
     let dp = []
@@ -3255,4 +3255,62 @@ funMap.longestPalindrome = () => {
   console.log(longestPalindrome(str))
 }
 
-funMap.longestPalindrome()
+// funMap.longestPalindrome()
+
+/**
+ * 最长回文子串问题
+ * 小册上的方案：限定子串的长度，逐个求状态，然后增加子串的长度，再逐个求状态
+ *
+ */
+funMap.longestPalindrome2 = () => {
+  let str = 'aaabbac'
+
+  function longestPalindrome2(str) {
+    let dp = []
+    let len = str.length
+
+    // 初始化状态为二维数组
+    for (let i = 0; i < len; i++) {
+      // 初始化 i j 相等时为 1，自己一个字符肯定回文啦
+      dp[i] = []
+      dp[i][i] = 1
+    }
+
+    // 如果只要长度的话，也可以直接用 res=1,然后不断更新最长长度
+    // let res = 1
+    let res = {
+      i: 0,
+      j: 0,
+    }
+
+    // n 表示当前求解的子串的长度
+    // 为 1 的时候就是一个字母，已经在上面初始化为1，所以从 2 开始
+    for (let n = 2; n <= len; n++) {
+      let item = str[n]
+      for (let i = 0; i <= len - n; i++) {
+        let j = i + n - 1
+
+        if (str[i] === str[j]) {
+          if (i + 1 <= j - 1) {
+            dp[i][j] = dp[i + 1][j - 1]
+          } else {
+            // 只有 n 为 2 的时候才会到这里
+            dp[i][j] = 1
+          }
+        } else {
+          dp[i][j] = 0
+        }
+
+        if (dp[i][j] && res.j - res.i < j - 1) {
+          res = { i, j }
+        }
+      }
+    }
+
+    return res
+  }
+
+  console.log(longestPalindrome2(str))
+}
+
+funMap.longestPalindrome2()
