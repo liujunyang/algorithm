@@ -3406,4 +3406,86 @@ funMap.buildTree2 = () => {
   console.log(buildTree2(preorder, inorder))
 }
 
-funMap.buildTree2()
+// funMap.buildTree2()
+
+/**
+ * 复制带随机指针的链表
+ * 题目描述：给定一个链表，每个节点包含一个额外增加的随机指针，该指针可以指向链表中的任何节点或空节点。要求返回这个链表的 深拷贝。
+ * 输入：head = [[7,null],[13,0],[11,4],[10,2],[1,0]]
+ * 输出：[[7,null],[13,0],[11,4],[10,2],[1,0]]
+ *
+ * 命题关键字：数据结构、链表、哈希表
+ *
+ * ------------------
+ * 自己做一遍
+ *
+ */
+funMap.copyRandomList = () => {
+  function Node(val, next = null, random = null) {
+    this.val = val
+    this.next = next
+    this.random = random
+  }
+
+  let list = {
+    val: 7,
+    next: {
+      val: 13,
+      next: {
+        val: 11,
+        next: {
+          val: 10,
+          next: {
+            val: 1,
+          },
+        },
+      },
+    },
+  }
+
+  // list.random = null
+  // list.next.random = list
+  // list.next.next.random = list.next.next.next.next
+  // list.next.next.next.random = list.next.next
+  // list.next.next.next.next.random = list
+
+  console.log(JSON.stringify(list))
+
+  function copyRandomList(list) {
+    let cur = list
+    let dummy = {}
+    let copy = {}
+
+    dummy.next = copy
+
+    let _map = new Map()
+
+    while (cur) {
+      copy.val = cur.val
+      _map.set(cur, copy)
+
+      // 避免最后一个位置出现 {}
+      if (cur.next) {
+        copy.next = {}
+        copy = copy.next
+      }
+
+      cur = cur.next
+    }
+
+    cur = list
+    copy = dummy.next
+
+    while (cur) {
+      copy.random = _map.get(cur.random)
+      cur = cur.next
+      copy = copy.next
+    }
+
+    return dummy.next
+  }
+
+  console.log(JSON.stringify(copyRandomList(list)))
+}
+
+funMap.copyRandomList()
