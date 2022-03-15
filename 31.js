@@ -3488,4 +3488,92 @@ funMap.copyRandomList = () => {
   console.log(JSON.stringify(copyRandomList(list)))
 }
 
-funMap.copyRandomList()
+// funMap.copyRandomList()
+
+// 谷歌真题系列
+/**
+ * 岛屿数量问题
+ * 题目描述：给你一个由 '1'（陆地）和 '0'（水）组成的的二维网格，请你计算网格中岛屿的数量。
+ * 岛屿总是被水包围，并且每座岛屿只能由水平方向或竖直方向上相邻的陆地连接形成。
+ * 此外，你可以假设该网格的四条边均被水包围。
+ *
+ * 示例 1:
+ * 输入:
+ * 11110
+ * 11010
+ * 11000
+ * 00000
+ *
+ * 输出: 1
+ *
+ * 示例 2:
+ * 输入:
+ * 11000
+ * 11000
+ * 00100
+ * 00011
+ * 输出: 3
+ * 解释: 每座岛屿只能由水平和/或竖直方向上相邻的陆地连接而成。
+ *
+ *
+ * 命题关键字：模拟、DFS
+ *
+ * ------------------
+ * 每次搜寻的时候，搜寻到一个岛屿，然后就把所有相连的陆地变成 0，
+ * 这样在后续遍历到该位置的时候也会因为成为了边界二及时退出，不会有性能问题
+ *
+ */
+funMap.numIslands = () => {
+  const arr = [
+    [1, 1, 1, 1, 0],
+    [1, 1, 0, 1, 0],
+    [1, 1, 0, 0, 0, 1],
+    [0, 0, 0, 0, 1],
+  ]
+
+  function numIslands(arr) {
+    let count = 0
+    // 上右下左
+    let moveX = [0, 1, 0, -1]
+    let moveY = [-1, 0, 1, 0]
+
+    for (let i = 0; i < arr.length; i++) {
+      for (let j = 0; j < arr[i].length; j++) {
+        if (arr[i][j]) {
+          dfs(i, j)
+          count++
+        }
+      }
+    }
+
+    // 一旦一个地方是1，那么就沿着他自己的四个方向递归的去把所有相连的岛屿变成0，直到碰到边界
+    // 然后在上面的两层 for 循环中遍历所有的点。因为 dfs 的作用主要就是一次刷掉一个岛屿，有点像扫雷游戏的效果
+    function dfs(i, j) {
+      // 同时处理了水域和边界，这里用 arr[i].length 兼容了 异型 的地图
+      // 这里处理边界主要是因为下面会自己递归自己，而不是为了上面双层 for 循环内的第一次 if 内的执行
+      if (
+        i < 0 ||
+        i >= arr.length ||
+        j < 0 ||
+        j >= arr[i].length ||
+        !arr[i][j]
+      ) {
+        return
+      }
+
+      // 放在下面 for 的前面，避免无限循环到自己
+      arr[i][j] = 0
+
+      // 把所有相连的岛屿变成 0
+      for (let k = 0; k < 4; k++) {
+        dfs(i + moveX[k], j + moveY[k])
+      }
+    }
+
+    return count
+  }
+
+  console.log(numIslands(arr))
+}
+
+funMap.numIslands()
