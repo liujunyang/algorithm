@@ -3576,4 +3576,177 @@ funMap.numIslands = () => {
   console.log(numIslands(arr))
 }
 
-funMap.numIslands()
+// funMap.numIslands()
+
+/**
+ * 扫地机器人问题
+ * 题目描述：房间（用格栅表示）中有一个扫地机器人。格栅中的每一个格子有空和障碍物两种可能。
+ * 扫地机器人提供4个API，可以向前进，向左转或者向右转。每次转弯90度。
+ * 当扫地机器人试图进入障碍物格子时，它的碰撞传感器会探测出障碍物，使它停留在原地。
+ * 请利用提供的4个API编写让机器人清理整个房间的算法。
+ *
+ * interface Robot {
+ *  // 若下一个方格为空，则返回true，并移动至该方格
+ *  // 若下一个方格为障碍物，则返回false，并停留在原地
+ *  boolean move();
+ *
+ *  // 在调用turnLeft/turnRight后机器人会停留在原位置
+ *  // 每次转弯90度
+ *  void turnLeft();
+ *  void turnRight();
+ *
+ *  // 清理所在方格
+ *  void clean();
+ * }
+ *
+ * 示例:
+ * 输入:
+ * room = [
+ * [1,1,1,1,1,0,1,1],
+ * [1,1,1,1,1,0,1,1],
+ * [1,0,1,1,1,1,1,1],
+ * [0,0,0,1,0,0,0,0],
+ * [1,1,1,1,1,1,1,1]
+ * ],
+ * row = 1,
+ * col = 3
+ * 解析: 房间格栅用0或1填充。0表示障碍物，1表示可以通过。 机器人从row=1，col=3的初始位置出发。在左上角的一行以下，三列以右。
+ *
+ * 注意:
+ * 输入只用于初始化房间和机器人的位置。你需要“盲解”这个问题。换而言之，你必须在对房间和机器人位置一无所知的情况下，只使用4个给出的API解决问题。
+ * 扫地机器人的初始位置一定是空地。
+ * 扫地机器人的初始方向向上。
+ * 所有可抵达的格子都是相连的，亦即所有标记为1的格子机器人都可以抵达。
+ * 可以假定格栅的四周都被墙包围。
+ *
+ * 命题关键字：模拟、DFS
+ * ----------------------
+ * 小册的代码是不可运行的，只能脑补。
+ * 不过小册通过一个 Set 来记录清扫过的格子，可以借鉴
+ *
+ *
+ * 如何用代码表示让机器人前进：改变索引+执行函数
+ * 四个方向尝试，直到不断回退到原点后尝试完毕后，就意味着所有地方都清扫到了
+ * 只不过被清扫过的地方，会在后面反复的 move 过去看看有没有清扫过
+ *
+ */
+funMap.cleanRoom = () => {
+  const room = [
+    [1, 1, 1, 1, 1, 0, 1, 1],
+    [1, 1, 1, 1, 1, 0, 1, 1],
+    [1, 0, 1, 1, 1, 1, 1, 1],
+    [0, 0, 0, 1, 0, 0, 0, 0],
+    [1, 1, 1, 1, 1, 1, 1, 1],
+  ]
+
+  function cleanRoom(room, row, col) {
+    let moveX = [-1, 0, 1, 0]
+    let moveY = [0, 1, 0, -1]
+
+    class Robot {
+      direction = 0
+      constructor(row, col) {
+        this.row = row
+        this.col = col
+        // 记录清扫过的地方
+        this.roomSet = new Set()
+      }
+      move() {
+        let newRow = this.row + moveX[this.direction]
+        let newCol = this.col + moveY[this.direction]
+
+        console.log('newRow, newCol', newRow, newCol)
+
+        // 这里不要忘记判断小于 0 的边界情况
+        if (
+          newRow < 0 ||
+          newRow >= room.length ||
+          newCol < 0 ||
+          newCol >= room[newRow].length ||
+          room[newRow][newCol] === 0
+          // 不能在这里加上对已经清扫过的地方的判断，否则回不了原位
+          // 而是在 dfs 函数中去判断，可以 move 到已经清扫的格子，不过直接函数调用栈 return 掉即可。
+          // this.roomSet.has(`${newRow}+${newCol}`)
+        ) {
+          return false
+        }
+
+        this.row = newRow
+        this.col = newCol
+        return true
+      }
+      clean() {
+        this.roomSet.add(`${this.row}+${this.col}`)
+      }
+
+      turnLeft() {
+        let newDirection = this.direction - 1
+        this.direction = newDirection < 0 ? 3 : newDirection
+      }
+      turnRight() {
+        let newDirection = this.direction + 1
+        this.direction = newDirection > 3 ? 0 : newDirection
+      }
+    }
+
+    // 初始化机器人的位置
+    let rob = new Robot(row, col)
+
+    /**
+     * 参数都放在 robot 机器人身上了
+     * 四处尝试，直到不断回退到原点后尝试完毕后，就意味着所有地方都清扫到了
+     * 只不过被清扫过的地方，会在后面反复的 move 过去看看有没有清扫过
+     * @param direction
+     */
+    function dfs() {
+      console.log('`${rob.row}+${rob.col}`', `${rob.row}+${rob.col}`)
+      let room = `${rob.row}+${rob.col}`
+
+      // 如果这个位置已经清扫过，直接返回，那有可能初始化时就放在一个已经清扫过的地方吗？
+      // 现实中会，这里不会，因为 rob.roomSet 刚开始是空的
+      if (rob.roomSet.has(room)) {
+        return
+      }
+
+      rob.clean(room)
+
+      // 直接遍历4个方向，这里利用了代码的同步特点
+      // 刚开始写是想着用一个变量记录尝试次数，后来发现分不清记录不同步骤的尝试次数了，
+      // 直接对每一个地方的4个方向进行遍历吧
+
+      for (let i = 0; i < 4; i++) {
+        // 对某个方向进行尝试
+        if (rob.move()) {
+          /**
+           * 能进到这，说明已经移动到下一个格子了（只是该格子可以是清扫过或未清扫过的，move 动作不判断是否清扫过）
+           * dfs 中会直接先进行清扫，而且清扫过的地方会在刚开始直接 return 掉，就会退到父级函数调用栈中去回到原处，
+           * 是通过不断回退到上一步然后去尝试它的4个方向做到清扫所有地方的，
+           *
+           * 清扫过的地方被重复经过有2种情况：
+           *    move 过去站在格子上，不过在 dfs 发现格子清扫过了之后，dfs 函数 return；
+           *    主动后退经过它；
+           *
+           * 假如经过某个格子 A 的时候它的旁边有个格子 B 可以打扫，不过在随后的遍历中因为路径的阻挡打扫不到了，
+           * 那也会在不断回退，直到回退到 A 的时候，进行下面的的不断转向尝试的时候，最终做到去清扫到 B。
+           */
+          dfs()
+          rob.turnLeft()
+          rob.turnLeft()
+          rob.move()
+          rob.turnRight()
+          rob.turnRight()
+        }
+
+        // 尝试完后，向右转，之后的交给下个循环
+        rob.turnRight()
+      }
+    }
+
+    dfs()
+    return rob.roomSet
+  }
+
+  console.log(cleanRoom(room, 1, 3))
+}
+
+funMap.cleanRoom()
