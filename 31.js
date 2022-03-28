@@ -3806,4 +3806,18 @@ funMap.mergeOverlappedArray = () => {
   console.log(mergeOverlappedArray(intervals))
 }
 
-funMap.mergeOverlappedArray()
+// funMap.mergeOverlappedArray()
+
+// 腾讯真题
+/**
+ * 寻找二叉树的最近公共祖先
+ * 题目描述：给定一个二叉树, 找到该树中两个指定节点的最近公共祖先。
+ *
+ */
+funMap.commonAncestor = () => {
+  function commonAncestor(invervals) {}
+
+  console.log(commonAncestor(intervals))
+}
+
+funMap.commonAncestor()
