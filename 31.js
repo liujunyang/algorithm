@@ -3766,13 +3766,44 @@ funMap.cleanRoom = () => {
  *
  * 命题关键字：数学问题、数组
  * -----------------
- * 区间集合是有序的吗
+ * 区间集合是有序的吗: 不一定
+ *
+ * 对于区间类问题，尝试以区间内的第一个元素为索引进行排序，往往可以帮助我们找到问题的突破点
  *
  */
 funMap.mergeOverlappedArray = () => {
-  function mergeOverlappedArray() {}
+  const intervals = [
+    [1, 3],
+    [2, 6],
+    [8, 10],
+    [15, 18],
+  ]
 
-  console.log(mergeOverlappedArray())
+  function mergeOverlappedArray(invervals) {
+    if (!invervals || !invervals.length) {
+      return
+    }
+
+    invervals.sort((a, b) => a[0] - b[0])
+
+    let res = [invervals[0]]
+
+    for (let i = 1; i < invervals.length; i++) {
+      let item = invervals[i]
+      let prev = res[res.length - 1]
+
+      if (prev[1] > item[0]) {
+        // 要兼容包含的情况，用 Math.max
+        prev[1] = Math.max(prev[1], item[1])
+      } else {
+        res.push(item)
+      }
+    }
+
+    return res
+  }
+
+  console.log(mergeOverlappedArray(intervals))
 }
 
 funMap.mergeOverlappedArray()
