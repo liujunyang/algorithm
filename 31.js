@@ -3811,13 +3811,50 @@ funMap.mergeOverlappedArray = () => {
 // 腾讯真题
 /**
  * 寻找二叉树的最近公共祖先
- * 题目描述：给定一个二叉树, 找到该树中两个指定节点的最近公共祖先。
+ * 题目描述：给定一个二叉树, 找到该树中两个指定节点的最近公共祖先。最近公共祖先节点可以为节点本身。
+ *
+ * 命题关键字：二叉树、递归
+ *            3
+ *         /     \
+ *       5        1
+ *     /  \      / \
+ *    6    2    0   8
+ *        / \
+ *       7  4
  *
  */
 funMap.commonAncestor = () => {
-  function commonAncestor(invervals) {}
+  let root = {
+    val: 3,
+    left: {
+      val: 5,
+      left: {
+        val: 6,
+      },
+      right: {
+        val: 2,
+        left: {
+          val: 7,
+        },
+        right: {
+          val: 4,
+        },
+      },
+    },
+    right: {
+      val: 1,
+      left: {
+        val: 0,
+      },
+      right: {
+        val: 8,
+      },
+    },
+  }
 
-  console.log(commonAncestor(intervals))
+  function commonAncestor(root, val1, val2) {}
+
+  console.log(commonAncestor(root, 6, 2))
 }
 
 funMap.commonAncestor()
