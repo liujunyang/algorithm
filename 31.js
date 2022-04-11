@@ -3822,8 +3822,13 @@ funMap.mergeOverlappedArray = () => {
  *        / \
  *       7  4
  *
+ * ------------------------
+ * 命题关键字：二叉树、递归
+ *
+ * 怎么算上报：一层层往上透传返回目标节点（如果到了边界 null，那就一层层往上透传返回 null）
+ *
  */
-funMap.commonAncestor = () => {
+funMap.lowestCommonAncestor = () => {
   let root = {
     val: 3,
     left: {
@@ -3852,9 +3857,44 @@ funMap.commonAncestor = () => {
     },
   }
 
-  function commonAncestor(root, val1, val2) {}
+  function lowestCommonAncestor(root, val1, val2) {
+    function dfs(root) {
+      /**
+       * 找到空或目标节点就是边界，
+       * 如果找的是 5 6，
+       * 到 5 这里直接就不再往下遍历了，而且 6 如果是它的子树上的某个节点，那本身结果就应该是 5。
+       * 这就进入了 节点 3 的 return left || right 的逻辑，结果 right 这时是 null，
+       * 那就返回了 5。
+       *
+       * 如果找的是 6 2，就进入了 5 的 if (left && right) 的逻辑，就返回了 5，
+       * 然后又回到了 3 的 return left || right 的逻辑，结果 right 这时是 null，
+       * 那就返回了 5。
+       *
+       * 最终递归栈都会回到根节点，除非本身目标就包含根节点，如求：3, 5 的最近共同祖先，那到 3 就直接返回了。
+       */
+      if (!root || root.val === val1 || root.val === val2) {
+        return root
+      }
 
-  console.log(commonAncestor(root, 6, 2))
+      // 注意这里传入参数的时候 root.left root.right 要写对
+      let left = dfs(root.left)
+      let right = dfs(root.right)
+
+      // 左子树和右子树都有，这里刚好是交叉点
+      if (left && right) {
+        return root
+      }
+
+      // 这里返回啥？本能反应是返回 root，那岂不是上面的判断和遍历就没用了，
+      // 所以应该返回 dfs 的结果，远远的传上去，
+      // 让递归栈回退到上面的时候再判断
+      return left || right
+    }
+
+    return dfs(root).val
+  }
+
+  console.log(lowestCommonAncestor(root, 5, 6))
 }
 
-funMap.commonAncestor()
+funMap.lowestCommonAncestor()
