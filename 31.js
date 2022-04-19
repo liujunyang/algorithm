@@ -3897,7 +3897,7 @@ funMap.lowestCommonAncestor = () => {
   console.log(lowestCommonAncestor(root, 5, 6))
 }
 
-funMap.lowestCommonAncestor()
+// funMap.lowestCommonAncestor()
 
 /**
  * 寻找两个正序数组的中位数
@@ -3920,56 +3920,87 @@ funMap.lowestCommonAncestor()
  * 两个数组总长度为偶数时的中位数，按照定义需要取中间两个元素的平均值, s1 s2 的和为总长度的一半，
  * 结果为：：(左侧较大的+右侧较小的值)/2
  *
- * 两个数组总长度为奇数时的中位数，按照定义需要取中间一个元素 s1 s2 的和为总长度的一半向上取整
+ * 两个数组总长度为奇数时的中位数，按照定义需要取中间一个元素 s1 s2 的和为总长度的一半向下取整
  * 结果为：：右侧较小的值
  *
  * 在已知 s1 s2 应该是什么样的值的时候，如何计算中位数是显而易见的。
  *
  *
- * 小册上 s1 s2 如何确定边界？即，分割点如何确定？
+ * 但难点是，小册上 s1 s2 如何确定边界？即，分割点如何确定？
  *
- * 分割点的可选项并不一定是是唯一的。
+ * 分割点 s1 s2 的可选方式是是唯一的，下面分为偶数、奇数去讨论
+ * 偶数的情况，如: 1 2 3 4 5 6 7 8 9 10
  * s1 + s2 = 5
- * 1 3 5| 7 9
- *  2 4 | 6 8 10
+ * 1 3 5 | 7 9
+ *   2 4 | 6 8 10
  * 左侧取5，右侧取6
  *
  * s1 + s2 = 5
- *    1 3 | 5 7 9
- * 2 4  6 | 8 10
- * 左侧取6，右侧取5
+ *   1 3 | 5 7 9
+ * 2 4 6 | 8 10
+ * 这种分隔就不行，左侧的值要统统小于右侧的值
  *
  *
- * 这个例子中 s1 s2 的取值方式是唯一的
- * s1 + s2 = 4
- * 1 3 | 5 7
+ * 奇数的情况，如: 1 2 3 4 5 6 7
+ * s1 + s2 = 3
+ *   1 | 3  5 7
  * 2 4 | 6
- * 左侧取4
+ * 这种分隔就不行，左侧的值要统统小于右侧的值
  *
- * s1 + s2 = 4
- * 1 3 5 | 7
- *     2 | 4 6
- * 这就不行了，看来右侧的最小值要大于左侧的最大值，这是边界
+ * s1 + s2 = 3
+ * 1 3 | 5 7
+ *   2 | 4 6
+ * 取右侧较小值4
  *
  *
- * s1 + s2 = 4
- *     1 | 3 5 7
+ * s1 + s2 = 3
+ * 1 3 5 7
  * 2 4 6 |
  * 这就不行了，右边没东西？
  *
+ * 边界的结论：左侧的最大值要小于右侧的最小值；而且分割线不能在边界上
  *
- * s1 + s2 = 4
- * 1 5 | 6 7
- * 2 3 | 4
- * 这就不行了，右边没东西？
  */
-funMap.findMid = () => {
-  let nums1 = [1, 3, 5, 7, 9]
-  let nums2 = [2, 4, 6, 8, 10]
+funMap.findMedianSortedArrays = () => {
+  // let nums1 = [1, 3, 5, 7, 9]
+  // let nums2 = [2, 4, 6, 8, 10]
 
-  function findMid(nums1, nums2) {}
+  let nums1 = [1, 3, 5, 7]
+  let nums2 = [2, 4, 6]
 
-  console.log(findMid(nums1, nums2))
+  function findMedianSortedArrays(nums1, nums2) {
+    let len1 = nums1.length
+    let len2 = nums2.length
+    // 奇数
+    let isOdd = (len1 + len2) % 2 !== 0
+    let sLen = Math.floor((len1 + len2) / 2)
+
+    console.log('isOdd', isOdd)
+
+    // 这里约定 i 是用于 nums1 数组，i < len1 是防止分隔到边缘
+    // i 就相当于 s1，表示长度，而不是表示下标
+    for (let i = 1; i < sLen && i < len1; i++) {
+      let j = sLen - i
+
+      let leftMax = Math.max(nums1[i - 1], nums2[j - 1])
+      let rightMin = Math.min(nums1[i], nums2[j])
+
+      console.log('leftMax, rightMin', leftMax, rightMin)
+
+      // 边界，跳过去，试下一个分隔方式
+      if (leftMax > rightMin) {
+        continue
+      }
+
+      if (isOdd) {
+        return rightMin
+      } else {
+        return (leftMax + rightMin) / 2
+      }
+    }
+  }
+
+  console.log(findMedianSortedArrays(nums1, nums2))
 }
 
-funMap.findMid()
+funMap.findMedianSortedArrays()
