@@ -3917,16 +3917,19 @@ funMap.lowestCommonAncestor = () => {
  * ------------------------
  * 命题关键字：二分思想、数学问题
  *
- * 两个数组总长度为偶数时的中位数，按照定义需要取中间两个元素的平均值, s1 s2 的和为总长度的一半，
+ * 将两个数组进行分隔，用 s1 s2 分别表示 num1 nums2 数组分隔后各自分割线左侧的元素的数量
+ * s1 s2 的和显然为总长度的一半【题意就相当于把整个数组拼起来然后取中位数，这时中位数左侧元素的个数就是总长度的一半】
+ * 在假设已知 s1 s2 应该是什么样的值的时候，如何计算中位数是显而易见的。
+ * 两个数组总长度为偶数时，中位数按照定义需要取中间两个元素的平均值,
  * 结果为：：(左侧较大的+右侧较小的值)/2
  *
- * 两个数组总长度为奇数时的中位数，按照定义需要取中间一个元素 s1 s2 的和为总长度的一半向下取整
+ * 两个数组总长度为奇数时，中位数按照定义需要取正中间一个元素， s1 s2 的和为总长度的一半向下取整
  * 结果为：：右侧较小的值
- *
- * 在已知 s1 s2 应该是什么样的值的时候，如何计算中位数是显而易见的。
  *
  *
  * 但难点是，小册上 s1 s2 如何确定边界？即，分割点如何确定？
+ *
+ * ==========================================================自己实现的方式
  *
  * 分割点 s1 s2 的可选方式是是唯一的，下面分为偶数、奇数去讨论
  * 偶数的情况，如: 1 2 3 4 5 6 7 8 9 10
@@ -3958,7 +3961,7 @@ funMap.lowestCommonAncestor = () => {
  * 2 4 6 |
  * 这就不行了，右边没东西？
  *
- * 边界的结论：左侧的最大值要小于右侧的最小值；而且分割线不能在边界上
+ * ！！！！边界的结论：左侧的最大值要小于右侧的最小值；而且分割线不能在边界上
  *
  */
 funMap.findMedianSortedArrays = () => {
@@ -4003,4 +4006,150 @@ funMap.findMedianSortedArrays = () => {
   console.log(findMedianSortedArrays(nums1, nums2))
 }
 
-funMap.findMedianSortedArrays()
+// funMap.findMedianSortedArrays()
+
+/**
+ * 寻找两个正序数组的中位数
+ * ==========================================================不完全按照小册进行改进的方式：
+ *
+ * 首先去遍历的数组的时候，取较短的数组，可以减少遍历的次数
+ * 用二分法进行遍历切割，而不是遍历，才能满足时间复杂度的要求
+ *
+ * 记录切割那一刀的两端的边界，通过对中间那一刀的不断对比，不断修正、缩小切割的左右边界，
+ * 最终实现切割在正确位置的目的
+ *
+ */
+funMap.findMedianSortedArrays2 = () => {
+  let nums1
+  let nums2
+
+  // nums1 = [1, 3, 5, 7, 9]
+  // nums2 = [2, 4, 6, 8, 10]
+  // nums1 = [1, 3, 5, 7]
+  // nums2 = [2, 4, 6]
+
+  nums1 = [5, 6, 7]
+  nums2 = [1, 2, 4, 12]
+
+  function findMedianSortedArrays2(nums1, nums2) {
+    let len1 = nums1.length
+    let len2 = nums2.length
+
+    //遍历的数组的时候，取较短的数组，可以减少遍历的次数
+    if (len1 > len2) {
+      return findMedianSortedArrays2(nums2, nums1)
+    }
+
+    // 奇数
+    let isOdd = (len1 + len2) % 2 !== 0
+    let sLen = Math.floor((len1 + len2) / 2)
+
+    console.log('isOdd', isOdd)
+
+    // 像小册上用 while 更合适，这里不是深度遍历
+    function dfs(slice1L, slice1R) {
+      let mid1 = slice1L + Math.floor((slice1R - slice1L) / 2)
+      let mid2 = sLen - mid1
+      // nums1[mid1 - 1] 可能 mid1 为0，那就不存在，所以还是用小册上的 L1 更合适
+
+      let leftMax = Math.max(nums1[mid1 - 1], nums2[mid2 - 1])
+      let rightMin = Math.min(nums1[mid1], nums2[mid2])
+
+      console.log('leftMax, rightMin', leftMax, rightMin)
+
+      // 边界，跳过去，试下一个分隔方式
+      if (leftMax > rightMin) {
+        if (nums1[mid1 - 1] > nums2[mid2]) {
+          slice1R = mid1 - 1
+        } else {
+          slice1L = mid1 + 1
+        }
+
+        return dfs(slice1L, slice1R)
+      } else if (isOdd) {
+        return rightMin
+      } else {
+        return (leftMax + rightMin) / 2
+      }
+    }
+
+    return dfs(0, len1)
+  }
+
+  console.log(findMedianSortedArrays2(nums1, nums2))
+}
+
+// funMap.findMedianSortedArrays2()
+
+/**
+ * 寻找两个正序数组的中位数
+ * ==========================================================按照小册进行改进的方式：
+ *
+ * 首先去遍历的数组的时候，取较短的数组，可以减少遍历的次数
+ * 用二分法进行遍历切割，而不是遍历，才能满足时间复杂度的要求
+ *
+ * 记录切割那一刀的两端的边界，通过对中间那一刀的不断对比，不断修正、缩小切割的左右边界，
+ * 最终实现切割在正确位置的目的
+ *
+ */
+funMap.findMedianSortedArrays3 = () => {
+  let nums1
+  let nums2
+
+  nums1 = [5, 6, 7]
+  nums2 = [1, 2, 4, 12]
+
+  function findMedianSortedArrays3(nums1, nums2) {
+    let len1 = nums1.length
+    let len2 = nums2.length
+
+    //遍历的数组的时候，取较短的数组，可以减少遍历的次数
+    if (len1 > len2) {
+      return findMedianSortedArrays3(nums2, nums1)
+    }
+
+    // 奇数
+    let isOdd = (len1 + len2) % 2 !== 0
+    let sLen = Math.floor((len1 + len2) / 2)
+
+    console.log('isOdd', isOdd)
+    let slice1L = 0
+    let slice1R = len1
+
+    // 初始化值，只是为了进入 while循环
+    // 这里用 slice 命名更合适，而不是用 mid，因为 slice1 可能是用二分
+    // 法切割的，但 slice2 就是算出来去切的，不一定在中间了
+    let slice1 = 0
+    let slice2 = 0
+    // 像小册上用 while 更合适：满足条件后直接用 return 跳出即可
+    // slice1 表示切割点的右侧元素的下标
+    // 这个边界为什么这么界定：slice1 是会相比前一个 slice1 动态往左往右移动的，不过往左不应该小于0，往右不能超过 len1，这也是自然的
+    while (slice1 >= 0 && slice1 <= len1) {
+      slice1 = slice1L + Math.floor((slice1R - slice1L) / 2)
+      slice2 = sLen - slice1
+      console.log('slice1 <= len1', slice1, len1)
+      let L1 = slice1 === 0 ? -Infinity : nums1[slice1 - 1]
+      // 别忘了也可能到右边的边界
+      let R1 = slice1 === len1 ? Infinity : nums1[slice1]
+      let L2 = slice2 === 0 ? -Infinity : nums2[slice2 - 1]
+      let R2 = slice2 === len2 ? Infinity : nums2[slice2]
+
+      // 边界，跳过去，试下一个分隔方式
+      if (L1 > R2) {
+        slice1R = slice1 - 1
+      } else if (L2 > R1) {
+        slice1L = slice1 + 1
+      } else if (isOdd) {
+        return Math.min(R1, R2)
+      } else {
+        return (Math.max(L1, L2) + Math.min(R1, R2)) / 2
+      }
+    }
+
+    return -1
+  }
+
+  console.log(findMedianSortedArrays3(nums1, nums2))
+}
+
+funMap.findMedianSortedArrays3()
