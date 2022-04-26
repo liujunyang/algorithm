@@ -4173,11 +4173,126 @@ funMap.findMedianSortedArrays3 = () => {
  *
  * ==========================================================
  * 命题关键字：动态规划、滚动数组
+ *
+ * n个房子和 n-1 个房子的解之间有什么关系
+ *
+ * 这里重要的思路是去求 f[i][x]，x 有 3 个可选值 0 1 2, 而不是直接求最终的最小值
+ *
+ * 状态转移方程：
+ * f[i][x] = Math.min(f[i-1][除x外的1个颜色], f[i-1][除x外的另1个颜色]) + cost[i][x]
+ *
+ * 初始值：
+ * f[0][0] = cost[0][0]
+ * f[0][1] = cost[0][1]
+ * f[0][2] = cost[0][2]
  */
 funMap.minCost = () => {
-  function minCost() {}
+  let costs = [
+    [17, 2, 17],
+    [16, 16, 5],
+    [14, 3, 19],
+  ]
+  function minCost(costs) {
+    if (!costs || !costs.length) {
+      return 0
+    }
 
-  console.log(minCost())
+    function getIndex(j) {
+      let _map = {
+        0: {
+          a: 1,
+          b: 2,
+        },
+        1: {
+          a: 0,
+          b: 2,
+        },
+        2: {
+          a: 0,
+          b: 1,
+        },
+      }
+
+      return _map[j]
+    }
+
+    let dp = []
+    let len = costs.length
+
+    for (let i = 1; i < len; i++) {
+      dp[i] = []
+    }
+
+    dp[0] = costs[0]
+
+    for (let i = 1; i < len; i++) {
+      for (let j = 0; j < 3; j++) {
+        let { a, b } = getIndex(j)
+        dp[i][j] = Math.min(dp[i - 1][a], dp[i - 1][b]) + costs[i][j]
+      }
+    }
+
+    return Math.min(...dp[len - 1])
+  }
+
+  console.log(minCost(costs))
 }
 
-funMap.minCost()
+// funMap.minCost()
+
+/**
+ * 粉刷房子问题
+ * 滚动数组优化
+ *
+ */
+funMap.minCost2 = () => {
+  let costs = [
+    [17, 2, 17],
+    [16, 16, 5],
+    [14, 3, 19],
+  ]
+  function minCost2(costs) {
+    if (!costs || !costs.length) {
+      return 0
+    }
+
+    function getIndex(j) {
+      let _map = {
+        0: {
+          a: 1,
+          b: 2,
+        },
+        1: {
+          a: 0,
+          b: 2,
+        },
+        2: {
+          a: 0,
+          b: 1,
+        },
+      }
+
+      return _map[j]
+    }
+
+    let len = costs.length
+    let dp = [...costs[0]]
+    let temp = []
+
+    for (let i = 1; i < len; i++) {
+      for (let j = 0; j < 3; j++) {
+        let { a, b } = getIndex(j)
+        temp[j] = Math.min(dp[a], dp[b]) + costs[i][j]
+      }
+      dp[0] = temp[0]
+      dp[1] = temp[1]
+      dp[2] = temp[2]
+    }
+
+    return Math.min(...dp)
+  }
+
+  console.log(minCost2(costs))
+}
+
+funMap.minCost2()
