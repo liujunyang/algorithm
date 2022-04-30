@@ -4314,11 +4314,34 @@ funMap.minCost2 = () => {
  * ============================================
  * 两侧边缘外的会流走，只有柱子之间能存水
  *
+ * 是由最低的那个柱子决定的，往右遍历的时候，遇到比当前柱子高的，就把这个矮的作废。
+ *
+ * 此时你需要做的，就是带上你脑内的双指针，尝试去走一遍这个数组的遍历，看看这个过程中能不能发现点什么有趣的东西
+ *
  */
 funMap.trapRain = () => {
-  function trapRain() {}
+  let columns = [0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1]
 
-  console.log(trapRain())
+  function trapRain(collums) {
+    let res = 0
+    let leftCur = 0
+    let rightCur = 0
+    let leftWall = 0
+    let rightWall = 0
+
+    while (leftCur < rightCur) {
+      if (collums[leftCur] > leftWall) {
+        leftWall = collums[leftCur]
+      }
+
+      rightCur++
+      if (collums[rightCur] > rightWall) {
+        rightWall = collums[rightCur]
+      }
+    }
+  }
+
+  console.log(trapRain(columns))
 }
 
 funMap.trapRain()
