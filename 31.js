@@ -15,6 +15,7 @@ funMap.twoSum = function () {
     for (let i = 0; i < arr.length; i++) {
       let item = arr[i]
 
+      // 这里要用 undefined 来判断，不要误把索引数字 0给判丢了
       if (diff[target - item] !== undefined) {
         return [diff[target - item], i]
       } else {
