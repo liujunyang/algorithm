@@ -15,6 +15,7 @@ funMap.twoSum = function () {
     for (let i = 0; i < arr.length; i++) {
       let item = arr[i]
 
+      // 这里要用 undefined 来判断，不要误把索引数字 0给判丢了
       if (diff[target - item] !== undefined) {
         return [diff[target - item], i]
       } else {
@@ -102,7 +103,9 @@ funMap.threeSum = () => {
           // 这里不要写成 temp = 0
           case temp === 0:
             res.push([nums[i], nums[j], nums[k]])
-            // 左侧边界值变大，右侧边界值变小，还是有可能求和为0，所以需要这么做
+            // 左侧边界值变大，右侧边界值变小，后面还是有可能求和为0，所以需要这么做
+            // 不需要在这个while循环之外把j再从 i+2 再开始测，因为如果i+2能匹配的话，就已经被统计进去了
+            // 直接在这个case下继续向中间移动即可
             j++
             k--
             break
