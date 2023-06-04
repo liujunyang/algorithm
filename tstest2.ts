@@ -13,3 +13,28 @@ type _Test = never extends string
   : 1
 
 let t: _Test = 7
+
+import type { createCatName } from './tstest'
+const name = createCatName()
+
+export type LiteralType<T> = T extends string
+  ? 'string'
+  : T extends number
+  ? 'number'
+  : T extends boolean
+  ? 'boolean'
+  : T extends null
+  ? 'null'
+  : T extends undefined
+  ? 'undefined'
+  : never
+
+  class Base {
+    printWithLove() { }
+  }
+  
+  class Derived extends Base {
+    override print() {
+      // ...
+    }
+  }

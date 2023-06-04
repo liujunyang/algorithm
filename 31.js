@@ -4318,6 +4318,9 @@ funMap.minCost2 = () => {
  *
  * 此时你需要做的，就是带上你脑内的双指针，尝试去走一遍这个数组的遍历，看看这个过程中能不能发现点什么有趣的东西
  *
+ * 确定用快慢指针还是对撞指针？用对撞指针。
+ * 怎么让左指针往右移动？用for循环？
+ *
  */
 funMap.trapRain = () => {
   let columns = [0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1]
@@ -4328,15 +4331,25 @@ funMap.trapRain = () => {
     let rightCur = 0
     let leftWall = 0
     let rightWall = 0
+    let len = collums.length
 
-    while (leftCur < rightCur) {
-      if (collums[leftCur] > leftWall) {
-        leftWall = collums[leftCur]
-      }
+    for (let i = 0; i < collums.length; i++) {
+      let item = collums[i]
+      leftCur = i
+      rightCur = len - 1
+      rightWall = collums[rightCur]
 
-      rightCur++
-      if (collums[rightCur] > rightWall) {
-        rightWall = collums[rightCur]
+      // rightCur 从右往左对撞
+      while (leftCur < rightCur) {
+        // 当前柱子更高的话，肯定要替换 rightWall 为当前的
+        if (collums[rightCur] > rightWall) {
+          rightWall = collums[rightCur]
+        }
+
+        rightCur--
+        if (collums[rightCur] > rightWall) {
+          rightWall = collums[rightCur]
+        }
       }
     }
   }

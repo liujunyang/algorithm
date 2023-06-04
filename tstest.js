@@ -1,9 +1,5 @@
-function fun() {
-    console.log("this is TypeScript");
+function liveDangerously(x) {
+    console.log(x.toFixed());
 }
-;
-fun();
-var fna = function (arr) {
-    return arr[0];
-};
+liveDangerously(null);
 //# sourceMappingURL=tstest.js.map
