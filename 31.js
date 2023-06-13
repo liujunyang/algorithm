@@ -189,6 +189,46 @@ funMap.validPalindrome = () => {
 
 // funMap.validPalindrome()
 
+/**
+ * 真题描述：给定一个非空字符串 s，最多删除一个字符。判断是否能成为回文字符串。
+ * @returns
+ */
+funcMap.validPalindrome2 = () => {
+  let str = 'abcdkdba'
+  // let str = 'abca'
+  let len = str.length
+  let i = 0
+  let j = len - 1
+  let hasJump = false
+
+  // 遇到截取，应该想到利用对称性+双指针
+  while (i <= j) {
+    if (str[i] === str[j]) {
+      i++
+      j--
+    } else {
+      if (hasJump) {
+        console.log('不回文')
+        return
+      } else {
+        hasJump = true
+        if (str[i + 1] === str[j]) {
+          i++
+        } else if (str[i] === str[j--]) {
+          j--
+        } else {
+          console.log('不回文')
+          return
+        }
+      }
+    }
+  }
+
+  console.log('回文')
+}
+
+// funcMap.validPalindrome2()
+
 // 设计一个支持以下两种操作的数据结构：
 funMap.wordDirectionary = () => {
   const str = 'abcdeba'
